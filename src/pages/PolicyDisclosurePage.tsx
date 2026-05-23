@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import type { DemoDataset, Dimension, DisclosureStatus, GapLevel, RequirementType, StandardType } from '../types/dataset'
+import type { DemoDataset, Dimension, DisclosureGap, DisclosureStatus, GapLevel, RequirementType } from '../types/dataset'
 import {
   DimensionBadge,
   DisclosureStatusBadge,
@@ -19,7 +19,6 @@ import {
 type FilterValue<T extends string> = 'all' | T
 
 export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
-  const [standard, setStandard] = useState<FilterValue<StandardType>>('all')
   const [dimension, setDimension] = useState<FilterValue<Dimension>>('all')
   const [requirement, setRequirement] = useState<FilterValue<RequirementType>>('all')
   const [status, setStatus] = useState<FilterValue<DisclosureStatus>>('all')
@@ -28,15 +27,16 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
   const filtered = useMemo(
     () =>
       sortByPriority(dataset.policyDisclosureAnalysis).filter((item) => {
-        if (standard !== 'all' && item.standardType !== standard) return false
         if (dimension !== 'all' && item.dimension !== dimension) return false
         if (requirement !== 'all' && item.requirementType !== requirement) return false
         if (status !== 'all' && item.disclosureStatus !== status) return false
         if (gap !== 'all' && item.gapLevel !== gap) return false
         return true
       }),
-    [dataset.policyDisclosureAnalysis, dimension, gap, requirement, standard, status],
+    [dataset.policyDisclosureAnalysis, dimension, gap, requirement, status],
   )
+  const esrsFiltered = filtered.filter((item) => item.standardType === 'ESRS')
+  const griFiltered = filtered.filter((item) => item.standardType === 'GRI')
 
   const esrs = getStandardProgress(dataset, 'ESRS')
   const gri = getStandardProgress(dataset, 'GRI')
@@ -92,8 +92,7 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
       </div>
 
       <Panel title="筛选条件">
-        <div className="grid gap-3 md:grid-cols-5">
-          <Select label="标准" value={standard} onChange={setStandard} options={['all', 'ESRS', 'GRI']} />
+        <div className="grid gap-3 md:grid-cols-4">
           <Select label="维度" value={dimension} onChange={setDimension} options={['all', 'E', 'S', 'G']} format={(value) => (value === 'all' ? '全部维度' : dimensionLabel[value as Dimension])} />
           <Select label="披露属性" value={requirement} onChange={setRequirement} options={['all', 'mandatory', 'voluntary']} format={(value) => (value === 'all' ? '全部属性' : requirementLabel[value as RequirementType])} />
           <Select label="披露状态" value={status} onChange={setStatus} options={['all', 'disclosed', 'partial', 'missing']} format={(value) => ({ all: '全部状态', disclosed: '已披露', partial: '部分披露', missing: '未披露' }[value] ?? value)} />
@@ -101,51 +100,69 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
         </div>
       </Panel>
 
-      <Panel title={`披露差距清单（${filtered.length}）`}>
-        <div className="overflow-x-auto">
-          <table className="min-w-[1100px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-200 text-xs uppercase text-slate-500">
-                <th className="py-3 pr-4">条款</th>
-                <th className="py-3 pr-4">议题</th>
-                <th className="py-3 pr-4">属性</th>
-                <th className="py-3 pr-4">状态</th>
-                <th className="py-3 pr-4">差距</th>
-                <th className="py-3 pr-4">证据与建议</th>
-                <th className="py-3 text-right">优先级</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((item) => (
-                <tr key={item.id} className="border-b border-slate-100 align-top">
-                  <td className="py-4 pr-4 font-semibold text-slate-950">{item.clauseId}</td>
-                  <td className="py-4 pr-4">
-                    <div className="flex flex-col gap-2">
-                      <span className="font-medium text-slate-900">{item.topicName}</span>
-                      <DimensionBadge value={item.dimension} />
-                    </div>
-                  </td>
-                  <td className="py-4 pr-4">
-                    <RequirementBadge value={item.requirementType} />
-                  </td>
-                  <td className="py-4 pr-4">
-                    <DisclosureStatusBadge value={item.disclosureStatus} />
-                  </td>
-                  <td className="py-4 pr-4">
-                    <GapBadge value={item.gapLevel} />
-                  </td>
-                  <td className="py-4 pr-4">
-                    <p className="leading-6 text-slate-700">{item.currentDisclosure}</p>
-                    <p className="mt-2 text-xs leading-5 text-slate-500">证据：{item.evidence}（{item.sourcePage}）</p>
-                    <p className="mt-2 text-xs leading-5 text-emerald-700">建议：{item.recommendation}</p>
-                  </td>
-                  <td className="py-4 text-right text-lg font-semibold text-slate-950">{item.priority}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <Panel title={`ESRS 披露差距分析结果（${esrsFiltered.length}）`}>
+        <DisclosureGapTable items={esrsFiltered} />
       </Panel>
+
+      <Panel title={`GRI 披露差距分析结果（${griFiltered.length}）`}>
+        <DisclosureGapTable items={griFiltered} />
+      </Panel>
+    </div>
+  )
+}
+
+function DisclosureGapTable({ items }: { items: DisclosureGap[] }) {
+  if (items.length === 0) {
+    return (
+      <div className="rounded border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
+        当前条件下暂无对应披露差距结果
+      </div>
+    )
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-[1100px] text-left text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 text-xs uppercase text-slate-500">
+            <th className="py-3 pr-4">条款</th>
+            <th className="py-3 pr-4">议题</th>
+            <th className="py-3 pr-4">属性</th>
+            <th className="py-3 pr-4">状态</th>
+            <th className="py-3 pr-4">差距</th>
+            <th className="py-3 pr-4">证据与建议</th>
+            <th className="py-3 text-right">优先级</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item) => (
+            <tr key={item.id} className="border-b border-slate-100 align-top">
+              <td className="py-4 pr-4 font-semibold text-slate-950">{item.clauseId}</td>
+              <td className="py-4 pr-4">
+                <div className="flex flex-col gap-2">
+                  <span className="font-medium text-slate-900">{item.topicName}</span>
+                  <DimensionBadge value={item.dimension} />
+                </div>
+              </td>
+              <td className="py-4 pr-4">
+                <RequirementBadge value={item.requirementType} />
+              </td>
+              <td className="py-4 pr-4">
+                <DisclosureStatusBadge value={item.disclosureStatus} />
+              </td>
+              <td className="py-4 pr-4">
+                <GapBadge value={item.gapLevel} />
+              </td>
+              <td className="py-4 pr-4">
+                <p className="leading-6 text-slate-700">{item.currentDisclosure}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-500">证据：{item.evidence}（{item.sourcePage}）</p>
+                <p className="mt-2 text-xs leading-5 text-emerald-700">建议：{item.recommendation}</p>
+              </td>
+              <td className="py-4 text-right text-lg font-semibold text-slate-950">{item.priority}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }

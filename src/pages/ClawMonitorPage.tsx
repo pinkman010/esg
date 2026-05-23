@@ -37,10 +37,33 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
     <div className="space-y-5">
       <div className="grid gap-4 md:grid-cols-4">
         <Summary label="舆情条数" value={`${filtered.length}`} hint="当前筛选结果" />
-        <Summary label="总触达声量" value={formatNumber(totalReach)} hint="Claw 估算触达" />
+        <Summary label="总触达声量" value={formatNumber(totalReach)} hint="当前筛选舆情的估算传播规模合计" />
         <Summary label="高风险事件" value={`${filtered.filter((item) => item.riskLevel === 'high').length}`} hint="需进入披露关注" />
         <Summary label="负面声量" value={`${filtered.filter((item) => item.sentiment === 'negative').length}`} hint="关联实质性议题" />
       </div>
+
+      <Panel title="触达声量说明">
+        <div className="grid gap-3 lg:grid-cols-[1fr,1fr,1fr]">
+          <div className="rounded border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-semibold text-slate-950">总触达声量</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              表示当前筛选范围内所有舆情事件的估算传播规模合计，用来判断哪些议题在外部环境中更容易形成关注。
+            </p>
+          </div>
+          <div className="rounded border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-semibold text-slate-950">单条声量来源</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              单条舆情的声量由 Claw 综合媒体来源、转载引用、平台传播范围和事件热度进行估算。
+            </p>
+          </div>
+          <div className="rounded border border-amber-100 bg-amber-50 p-4">
+            <p className="text-sm font-semibold text-amber-900">使用限制</p>
+            <p className="mt-2 text-sm leading-6 text-slate-700">
+              触达声量代表估算传播规模，不能直接理解为精确阅读人数或官方流量；筛选条件变化后，声量和热点议题会同步重算。
+            </p>
+          </div>
+        </div>
+      </Panel>
 
       <div className="grid gap-5 xl:grid-cols-[1.2fr,0.8fr]">
         <Panel
@@ -110,7 +133,7 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
               <p className="mt-3 text-sm leading-6 text-slate-600">{item.summary}</p>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <span>关联议题：{item.topicName}</span>
-                <span>触达：{formatNumber(item.reach)}</span>
+                <span>估算触达声量：{formatNumber(item.reach)}</span>
                 <span>任务：{item.clawTaskId}</span>
               </div>
             </article>
