@@ -12,8 +12,8 @@ import { Panel } from '../components/Panel'
 import {
   dimensionLabel,
   formatNumber,
+  getFullStandardProgress,
   getRequirementDistribution,
-  getStandardProgress,
   requirementLabel,
   sortByPriority,
 } from '../lib/analytics'
@@ -75,15 +75,14 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
   const esrsFiltered = filtered.filter((item) => item.standardType === 'ESRS')
   const griFiltered = filtered.filter((item) => item.standardType === 'GRI')
 
-  const esrs = getStandardProgress(dataset, 'ESRS')
-  const gri = getStandardProgress(dataset, 'GRI')
+  const standardProgress = getFullStandardProgress()
 
   return (
     <div className="space-y-5">
       <div className="grid gap-5 xl:grid-cols-[0.9fr,1.1fr]">
         <Panel title="标准覆盖概览">
           <div className="grid gap-3">
-            {[gri, esrs].map((item) => (
+            {standardProgress.map((item) => (
               <div key={item.standardType} className="rounded border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-slate-950">{item.standardType}</p>
@@ -92,10 +91,11 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
                   <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" style={{ width: `${item.completion}%` }} />
                 </div>
-                <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs text-slate-500">
+                <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs text-slate-500 sm:grid-cols-4">
                   <span>已披露 {item.disclosed}</span>
                   <span>部分 {item.partial}</span>
                   <span>未披露 {item.missing}</span>
+                  <span>待确认 {item.pending}</span>
                 </div>
               </div>
             ))}
@@ -263,13 +263,22 @@ const topGapLevelMap: Record<string, GapLevel> = {
 function TopGapTable({ items }: { items: typeof fullStandardSummary.topGaps }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[920px] text-left text-sm">
+      <table className="w-full min-w-[960px] table-fixed text-left text-sm">
+        <colgroup>
+          <col className="w-[7%]" />
+          <col className="w-[8%]" />
+          <col className="w-[16%]" />
+          <col className="w-[38%]" />
+          <col className="w-[11%]" />
+          <col className="w-[11%]" />
+          <col className="w-[9%]" />
+        </colgroup>
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50/80 text-xs uppercase text-slate-500">
             <th className="whitespace-nowrap py-3 pr-4 font-semibold">排名</th>
             <th className="whitespace-nowrap py-3 pr-4 font-semibold">标准</th>
             <th className="whitespace-nowrap py-3 pr-4 font-semibold">条款</th>
-            <th className="w-full py-3 pr-4 font-semibold">重点缺口</th>
+            <th className="py-3 pr-4 font-semibold">重点缺口</th>
             <th className="whitespace-nowrap py-3 pr-4 font-semibold">状态</th>
             <th className="whitespace-nowrap py-3 pr-4 font-semibold">差距</th>
             <th className="whitespace-nowrap py-3 text-right font-semibold">优先级</th>
@@ -303,7 +312,7 @@ function TopGapTable({ items }: { items: typeof fullStandardSummary.topGaps }) {
                 </td>
                 <td className="whitespace-nowrap py-4 pr-4 font-semibold text-slate-950">{item.standard}</td>
                 <td className="whitespace-nowrap py-4 pr-4 text-slate-600">{item.clause}</td>
-                <td className="w-full py-4 pr-4 text-slate-700">{item.topic}</td>
+                <td className="py-4 pr-4 leading-6 text-slate-700">{item.topic}</td>
                 <td className="whitespace-nowrap py-4 pr-4">
                   <DisclosureStatusBadge value={topGapStatusMap[item.status] ?? 'partial'} />
                 </td>

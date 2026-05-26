@@ -7,17 +7,16 @@ import { Panel } from '../components/Panel'
 import {
   formatNumber,
   generateSparkline,
+  getFullStandardProgress,
   getGapDistribution,
   getOverviewMetrics,
   getOpinionTopicHotspots,
-  getStandardProgress,
   sortByPriority,
 } from '../lib/analytics'
 
 export function OverviewPage({ dataset }: { dataset: DemoDataset }) {
   const metrics = getOverviewMetrics(dataset)
-  const esrs = getStandardProgress(dataset, 'ESRS')
-  const gri = getStandardProgress(dataset, 'GRI')
+  const standardProgress = getFullStandardProgress()
   const hotspotTopics = getOpinionTopicHotspots(dataset.publicOpinion).slice(0, 5)
   const keyGaps = sortByPriority(dataset.policyDisclosureAnalysis)
     .filter((item) => item.gapLevel !== 'none')
@@ -67,7 +66,7 @@ export function OverviewPage({ dataset }: { dataset: DemoDataset }) {
         <MetricCard
           label="高风险舆情"
           value={`${metrics.highRiskOpinions}`}
-          hint={`负面声量 ${metrics.negativeOpinions} 条，已关联议题库`}
+          hint={`负面舆情 ${metrics.negativeOpinions} 条，已关联议题库`}
           icon={AlertTriangle}
           tone="blue"
           sparkline={generateSparkline(metrics.highRiskOpinions, 'down')}
@@ -97,7 +96,7 @@ export function OverviewPage({ dataset }: { dataset: DemoDataset }) {
               },
               {
                 title: 'Claw 舆情监测',
-                desc: '外部声量反向验证议题重要性和风险热度',
+                desc: '外部声量指数反向验证议题重要性和风险热度',
                 icon: Network,
               },
             ].map((item, index) => {
@@ -122,7 +121,7 @@ export function OverviewPage({ dataset }: { dataset: DemoDataset }) {
 
         <Panel title="标准匹配进度" showInfo>
           <div className="space-y-5">
-            {[esrs, gri].map((item) => (
+            {standardProgress.map((item) => (
               <div key={item.standardType}>
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-semibold text-slate-800">{item.standardType}</span>
@@ -134,7 +133,7 @@ export function OverviewPage({ dataset }: { dataset: DemoDataset }) {
                     style={{ width: `${item.completion}%` }}
                   />
                 </div>
-                <div className="mt-2 flex gap-3 text-xs text-slate-500">
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">
                   <span className="flex items-center gap-1">
                     <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
                     已披露 {item.disclosed}
@@ -146,6 +145,10 @@ export function OverviewPage({ dataset }: { dataset: DemoDataset }) {
                   <span className="flex items-center gap-1">
                     <span className="inline-block h-2 w-2 rounded-full bg-slate-300" />
                     缺失 {item.missing}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-2 w-2 rounded-full bg-slate-400" />
+                    待确认 {item.pending}
                   </span>
                 </div>
               </div>
@@ -216,7 +219,7 @@ export function OverviewPage({ dataset }: { dataset: DemoDataset }) {
             >
               <p className="text-sm font-semibold text-slate-950">{item.topicName}</p>
               <p className="mt-2 text-2xl font-bold tracking-tight text-slate-950">{formatNumber(item.reach)}</p>
-              <p className="mt-1 text-xs text-slate-500">触达声量 · {item.count} 条</p>
+              <p className="mt-1 text-xs text-slate-500">平均指数 · {item.count} 条</p>
             </div>
           ))}
         </div>

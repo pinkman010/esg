@@ -315,6 +315,39 @@ export const getStandardProgress = (dataset: DemoDataset, standardType: Standard
   }
 }
 
+export interface FullStandardProgress {
+  standardType: StandardType
+  total: number
+  disclosed: number
+  partial: number
+  missing: number
+  pending: number
+  completion: number
+}
+
+export const fullStandardProgress: FullStandardProgress[] = [
+  {
+    standardType: 'GRI',
+    total: 503,
+    disclosed: 337,
+    partial: 124,
+    missing: 0,
+    pending: 42,
+    completion: 82,
+  },
+  {
+    standardType: 'ESRS',
+    total: 945,
+    disclosed: 776,
+    partial: 130,
+    missing: 1,
+    pending: 38,
+    completion: 90,
+  },
+]
+
+export const getFullStandardProgress = () => fullStandardProgress
+
 export const getTopics = (items: MaterialityBenchmarkItem[]) =>
   Array.from(new Map(items.map((item) => [item.topicId, item.topicName])).entries()).map(
     ([topicId, topicName]) => ({ topicId, topicName }),
@@ -406,21 +439,27 @@ export const getOpinionTrend = (items: PublicOpinionItem[]) => {
 }
 
 export const getOpinionTopicHotspots = (items: PublicOpinionItem[]) => {
-  const grouped = new Map<string, { topicName: string; count: number; reach: number }>()
+  const grouped = new Map<string, { topicName: string; count: number; totalReach: number }>()
 
   items.forEach((item) => {
     const current = grouped.get(item.topicId) ?? {
       topicName: item.topicName,
       count: 0,
-      reach: 0,
+      totalReach: 0,
     }
 
     grouped.set(item.topicId, {
       topicName: item.topicName,
       count: current.count + 1,
-      reach: current.reach + item.reach,
+      totalReach: current.totalReach + item.reach,
     })
   })
 
-  return Array.from(grouped.values()).sort((left, right) => right.reach - left.reach)
+  return Array.from(grouped.values())
+    .map((item) => ({
+      topicName: item.topicName,
+      count: item.count,
+      reach: Math.round(item.totalReach / Math.max(item.count, 1)),
+    }))
+    .sort((left, right) => right.reach - left.reach)
 }

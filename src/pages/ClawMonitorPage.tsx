@@ -21,46 +21,48 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
 
   const filtered = useMemo(
     () =>
-      dataset.publicOpinion.filter((item) => {
-        if (company !== 'all' && item.companyId !== company) return false
-        if (sentiment !== 'all' && item.sentiment !== sentiment) return false
-        if (risk !== 'all' && item.riskLevel !== risk) return false
-        return true
-      }),
+      dataset.publicOpinion
+        .filter((item) => {
+          if (company !== 'all' && item.companyId !== company) return false
+          if (sentiment !== 'all' && item.sentiment !== sentiment) return false
+          if (risk !== 'all' && item.riskLevel !== risk) return false
+          return true
+        })
+        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
     [company, dataset.publicOpinion, risk, sentiment],
   )
 
   const trend = getOpinionTrend(filtered)
   const hotspots = getOpinionTopicHotspots(filtered).slice(0, 6)
-  const totalReach = filtered.reduce((sum, item) => sum + item.reach, 0)
+  const averageReachIndex = Math.round(filtered.reduce((sum, item) => sum + item.reach, 0) / Math.max(filtered.length, 1))
 
   return (
     <div className="space-y-5">
       <div className="grid gap-4 md:grid-cols-4">
         <Summary label="舆情条数" value={`${filtered.length}`} hint="当前筛选结果" icon={FileText} tone="blue" />
-        <Summary label="总触达声量" value={formatNumber(totalReach)} hint="当前筛选舆情的估算传播规模合计" icon={Megaphone} tone="green" />
+        <Summary label="平均声量指数" value={formatNumber(averageReachIndex)} hint="当前筛选舆情的平均关注强度" icon={Megaphone} tone="green" />
         <Summary label="高风险事件" value={`${filtered.filter((item) => item.riskLevel === 'high').length}`} hint="需进入披露关注" icon={AlertTriangle} tone="red" />
-        <Summary label="负面声量" value={`${filtered.filter((item) => item.sentiment === 'negative').length}`} hint="关联实质性议题" icon={ThumbsDown} tone="amber" />
+        <Summary label="负面舆情" value={`${filtered.filter((item) => item.sentiment === 'negative').length}`} hint="关联实质性议题" icon={ThumbsDown} tone="amber" />
       </div>
 
-      <Panel title="触达声量说明">
+      <Panel title="声量指数说明">
         <div className="grid gap-3 lg:grid-cols-[1fr,1fr,1fr]">
           <div className="rounded border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-slate-950">总触达声量</p>
+            <p className="text-sm font-semibold text-slate-950">平均声量指数</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              表示当前筛选范围内所有舆情事件的估算传播规模合计，用来判断哪些议题在外部环境中更容易形成关注。
+              表示当前筛选范围内单条舆情的平均关注强度，用来判断外部关注是否集中升温。
             </p>
           </div>
           <div className="rounded border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-slate-950">单条声量来源</p>
+            <p className="text-sm font-semibold text-slate-950">单条指数来源</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              单条舆情的声量由 Claw 综合媒体来源、转载引用、平台传播范围和事件热度进行估算。
+              单条舆情指数由 Claw 综合媒体来源、转载引用、平台传播范围和事件热度估算，范围为 10-100。
             </p>
           </div>
           <div className="rounded border border-amber-100 bg-amber-50 p-4">
             <p className="text-sm font-semibold text-amber-900">使用限制</p>
             <p className="mt-2 text-sm leading-6 text-slate-700">
-              触达声量代表估算传播规模，不能直接理解为精确阅读人数或官方流量；筛选条件变化后，声量和热点议题会同步重算。
+              声量指数是相对强度指标，不代表精确阅读人数或官方流量；筛选条件变化后，平均指数和热点议题会同步重算。
             </p>
           </div>
         </div>
@@ -140,7 +142,7 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
               <p className="mt-3 text-sm leading-6 text-slate-600">{item.summary}</p>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <span>关联议题：{item.topicName}</span>
-                <span>估算触达声量：{formatNumber(item.reach)}</span>
+                <span>声量指数：{formatNumber(item.reach)}</span>
                 <span>任务：{item.clawTaskId}</span>
               </div>
             </article>

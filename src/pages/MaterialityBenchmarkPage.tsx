@@ -64,7 +64,7 @@ const scoreBands: Array<{ range: string; depth: DisclosureDepth; desc: string }>
 
 export function MaterialityBenchmarkPage({ dataset }: { dataset: DemoDataset }) {
   const [dimension, setDimension] = useState<DimensionFilter>('all')
-  const [selectedTopic, setSelectedTopic] = useState<string>('carbon_emission')
+  const [selectedTopic, setSelectedTopic] = useState<string>('climate-ghg')
 
   const filteredItems = useMemo(
     () =>
@@ -199,12 +199,18 @@ export function MaterialityBenchmarkPage({ dataset }: { dataset: DemoDataset }) 
 
       <Panel title="议题覆盖热力图">
         <div className="overflow-x-auto">
-          <table className="min-w-[980px] text-left text-sm">
+          <table className="w-full min-w-[980px] table-fixed text-left text-sm">
+            <colgroup>
+              <col className="w-[24%]" />
+              {dataset.companies.map((company) => (
+                <col key={company.id} className="w-[15.2%]" />
+              ))}
+            </colgroup>
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/80 text-xs uppercase text-slate-500">
                 <th className="py-3 pr-4 font-semibold">议题</th>
                 {dataset.companies.map((company) => (
-                  <th key={company.id} className="py-3 pr-4 font-semibold">
+                  <th key={company.id} className="py-3 px-3 text-center font-semibold">
                     {company.shortName}
                   </th>
                 ))}
@@ -222,8 +228,8 @@ export function MaterialityBenchmarkPage({ dataset }: { dataset: DemoDataset }) 
                     const depth = getDisclosureDepthByScore(value.score)
 
                     return (
-                      <td key={value.companyId} className="py-3 pr-4">
-                        <div className="flex items-center gap-2">
+                      <td key={value.companyId} className="py-3 px-3">
+                        <div className="flex items-center justify-center gap-2">
                           <span className={`inline-flex w-14 justify-center rounded px-2 py-1 text-xs font-semibold ${depthTone[depth]}`}>
                             {value.score}
                           </span>
