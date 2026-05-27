@@ -86,7 +86,6 @@ export function MaterialityBenchmarkPage({ dataset }: { dataset: DemoDataset }) 
       <div className="grid items-start gap-5 xl:grid-cols-[1.1fr,0.9fr]">
         <Panel
           title="五家公司实质性议题雷达"
-          className="animate-fade-in-delay-1"
           action={
             <label className="flex items-center gap-2">
               <span className="text-xs font-semibold text-slate-500">ESG 维度</span>

@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import * as echarts from 'echarts'
+import type { EChartsOption } from 'echarts'
 import { FileSearch } from 'lucide-react'
 import type { DemoDataset, Dimension, DisclosureGap, DisclosureStatus, GapLevel, RequirementType } from '../types/dataset'
 import {
@@ -7,7 +9,6 @@ import {
   GapBadge,
   RequirementBadge,
 } from '../components/Badge'
-import { EChart } from '../components/EChart'
 import { Panel } from '../components/Panel'
 import { useCountUp } from '../hooks/useCountUp'
 import {
@@ -80,12 +81,50 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
   const griFiltered = filtered.filter((item) => item.standardType === 'GRI')
 
   const standardProgress = getFullStandardProgress()
-  const requirementDistribution = getRequirementDistribution(dataset.policyDisclosureAnalysis)
+  const requirementDistribution = useMemo(
+    () => getRequirementDistribution(dataset.policyDisclosureAnalysis),
+    [dataset.policyDisclosureAnalysis],
+  )
+
+  const barChartOptions = useMemo(
+    () => {
+      const createOption = (collapsed: boolean): EChartsOption => ({
+        tooltip: { trigger: 'axis' as const },
+        color: ['#ef4444', '#10b981', '#f59e0b', '#22c55e', '#38bdf8', '#0f766e', '#94a3b8', '#64748b'],
+        grid: { left: 36, right: 16, top: 20, bottom: 54 },
+        xAxis: {
+          type: 'category' as const,
+          data: requirementDistribution.map((item) => item.name),
+          axisLabel: { interval: 0, rotate: 18, fontSize: 11 },
+        },
+        yAxis: { type: 'value' as const, minInterval: 1 },
+        series: [
+          {
+            type: 'bar' as const,
+            barWidth: 22,
+            data: requirementDistribution.map((item) => (collapsed ? 0 : item.value)),
+            itemStyle: { borderRadius: [4, 4, 0, 0] as [number, number, number, number] },
+            animation: true,
+            animationDuration: 0,
+            animationDurationUpdate: 1300,
+            animationEasingUpdate: 'cubicOut' as const,
+            animationDelayUpdate: (idx: number) => idx * 110,
+          },
+        ],
+      })
+
+      return {
+        initial: createOption(true),
+        expanded: createOption(false),
+      }
+    },
+    [requirementDistribution],
+  )
 
   return (
     <div className="space-y-5">
       <div className="grid gap-5 xl:grid-cols-[0.9fr,1.1fr]">
-        <Panel title="标准覆盖概览" className="animate-fade-in-delay-1">
+        <Panel title="标准覆盖概览">
           <div className="grid gap-3">
             {standardProgress.map((item) => (
               <div key={item.standardType} className="rounded border border-slate-200 bg-slate-50 p-4">
@@ -93,9 +132,7 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
                   <p className="text-sm font-semibold text-slate-950">{item.standardType}</p>
                   <p className="text-2xl font-semibold text-emerald-700">{item.completion}%</p>
                 </div>
-                <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" style={{ width: `${item.completion}%` }} />
-                </div>
+                <AnimatedProgressBar target={item.completion} />
                 <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">
                   <span className="flex items-center gap-1">
                     <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
@@ -119,28 +156,11 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
           </div>
         </Panel>
 
-        <Panel title="披露属性状态" className="animate-fade-in-delay-2">
-          <EChart
+        <Panel title="披露属性状态">
+          <AnimatedBarChart
             className="h-56 w-full"
-            option={{
-              tooltip: { trigger: 'axis' },
-              color: ['#ef4444', '#10b981', '#f59e0b', '#22c55e', '#38bdf8', '#0f766e', '#94a3b8', '#64748b'],
-              grid: { left: 36, right: 16, top: 20, bottom: 54 },
-              xAxis: {
-                type: 'category',
-                data: requirementDistribution.map((item) => item.name),
-                axisLabel: { interval: 0, rotate: 18, fontSize: 11 },
-              },
-              yAxis: { type: 'value', minInterval: 1 },
-              series: [
-                {
-                  type: 'bar',
-                  barWidth: 22,
-                  data: requirementDistribution.map((item) => item.value),
-                  itemStyle: { borderRadius: [4, 4, 0, 0] },
-                },
-              ],
-            }}
+            initialOption={barChartOptions.initial}
+            option={barChartOptions.expanded}
           />
         </Panel>
       </div>
@@ -196,6 +216,53 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
       </Panel>
     </div>
   )
+}
+
+function AnimatedProgressBar({ target }: { target: number }) {
+  const animated = useCountUp(target, 700)
+  return (
+    <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+      <div
+        className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-none"
+        style={{ width: `${animated}%` }}
+      />
+    </div>
+  )
+}
+
+function AnimatedBarChart({
+  className,
+  initialOption,
+  option,
+}: {
+  className?: string
+  initialOption: EChartsOption
+  option: EChartsOption
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!containerRef.current) {
+      return undefined
+    }
+
+    const chart = echarts.init(containerRef.current, undefined, { renderer: 'canvas' })
+    chart.setOption(initialOption, true)
+    const timer = window.setTimeout(() => {
+      chart.setOption(option)
+    }, 420)
+
+    const resizeObserver = new ResizeObserver(() => chart.resize())
+    resizeObserver.observe(containerRef.current)
+
+    return () => {
+      window.clearTimeout(timer)
+      resizeObserver.disconnect()
+      chart.dispose()
+    }
+  }, [initialOption, option])
+
+  return <div ref={containerRef} className={className ?? 'h-72 w-full'} />
 }
 
 function SummaryStat({ label, value }: { label: string; value: string }) {

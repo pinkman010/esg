@@ -16,7 +16,7 @@ export function EChart({ option, className }: EChartProps) {
     }
 
     const chart = echarts.init(containerRef.current, undefined, { renderer: 'canvas' })
-    chart.setOption(option, true)
+    chart.setOption(option)
 
     const resizeObserver = new ResizeObserver(() => chart.resize())
     resizeObserver.observe(containerRef.current)
