@@ -5,6 +5,7 @@ export interface DemoDataRepository {
 }
 
 const datasetUrl = '/data/demo-dataset.json'
+const fullStandardDisclosureUrl = '/generated/full-standard-disclosure.json'
 
 const formatZodError = (error: unknown) => {
   if (!error || typeof error !== 'object' || !('issues' in error)) {
@@ -21,13 +22,26 @@ const formatZodError = (error: unknown) => {
 
 export const demoDataRepository: DemoDataRepository = {
   async load() {
-    const response = await fetch(datasetUrl, { cache: 'no-store' })
+    const [response, fullStandardResponse] = await Promise.all([
+      fetch(datasetUrl, { cache: 'no-store' }),
+      fetch(fullStandardDisclosureUrl, { cache: 'no-store' }),
+    ])
 
     if (!response.ok) {
       throw new Error(`无法加载演示数据：${response.status} ${response.statusText}`)
     }
+    if (!fullStandardResponse.ok) {
+      throw new Error(`无法加载全量标准库数据：${fullStandardResponse.status} ${fullStandardResponse.statusText}`)
+    }
 
-    const raw = await response.json()
+    const base = await response.json()
+    const fullStandard = await fullStandardResponse.json()
+    const raw = {
+      ...base,
+      standards: fullStandard.standards,
+      policyDisclosureAnalysis: fullStandard.policyDisclosureAnalysis,
+      auditTrail: [...(base.auditTrail ?? []), ...(fullStandard.auditTrail ?? [])],
+    }
     const parsed = demoDatasetSchema.safeParse(raw)
 
     if (!parsed.success) {

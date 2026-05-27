@@ -119,36 +119,42 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
       </div>
 
       <Panel title="Claw 舆情结果列表">
-        <div className="space-y-3">
-          {filtered.length === 0 ? (
+        {filtered.length === 0 ? (
+          <div className="space-y-3">
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50/80 p-8 text-center">
               <FileText className="h-8 w-8 text-slate-300" />
               <p className="mt-3 text-sm font-medium text-slate-500">当前条件下暂无舆情结果</p>
               <p className="mt-1 text-xs text-slate-400">请尝试调整上方筛选条件</p>
             </div>
-          ) : filtered.map((item) => (
-            <article key={item.id} className="rounded border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-sm">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h3 className="font-semibold text-slate-950">{item.title}</h3>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {item.companyName} · {item.source} · {item.publishedAt.slice(0, 16).replace('T', ' ')}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <SentimentBadge value={item.sentiment} />
-                  <RiskBadge value={item.riskLevel} />
-                </div>
-              </div>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{item.summary}</p>
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                <span>关联议题：{item.topicName}</span>
-                <span>声量指数：{formatNumber(item.reach)}</span>
-                <span>任务：{item.clawTaskId}</span>
-              </div>
-            </article>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="max-h-[1624px] overflow-y-auto overscroll-contain pr-2 [scrollbar-gutter:stable]">
+            <div className="space-y-3">
+              {filtered.map((item) => (
+                <article key={item.id} className="rounded border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-sm">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold text-slate-950">{item.title}</h3>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {item.companyName} · {item.source} · {item.publishedAt.slice(0, 16).replace('T', ' ')}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <SentimentBadge value={item.sentiment} />
+                      <RiskBadge value={item.riskLevel} />
+                    </div>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">{item.summary}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                    <span>关联议题：{item.topicName}</span>
+                    <span>声量指数：{formatNumber(item.reach)}</span>
+                    <span>任务：{item.clawTaskId}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
       </Panel>
     </div>
   )

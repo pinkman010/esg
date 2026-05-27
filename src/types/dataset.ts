@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
-export const dimensionSchema = z.enum(['E', 'S', 'G'])
+export const dimensionSchema = z.enum(['E', 'S', 'G', 'C'])
 export const standardTypeSchema = z.enum(['ESRS', 'GRI'])
-export const requirementTypeSchema = z.enum(['mandatory', 'voluntary'])
-export const disclosureStatusSchema = z.enum(['disclosed', 'partial', 'missing'])
-export const gapLevelSchema = z.enum(['major', 'minor', 'none'])
+export const requirementTypeSchema = z.enum(['mandatory', 'voluntary', 'conditional', 'pending'])
+export const disclosureStatusSchema = z.enum(['disclosed', 'partial', 'missing', 'pending'])
+export const gapLevelSchema = z.enum(['major', 'minor', 'none', 'pending'])
 export const disclosureDepthSchema = z.enum(['leading', 'adequate', 'weak', 'missing'])
 export const sentimentSchema = z.enum(['positive', 'neutral', 'negative'])
 export const riskLevelSchema = z.enum(['high', 'medium', 'low'])

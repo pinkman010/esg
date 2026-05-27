@@ -13,6 +13,9 @@ import { useCountUp } from '../hooks/useCountUp'
 import {
   dimensionLabel,
   formatNumber,
+  getChineseDisclosureRecommendation,
+  getChineseDisclosureTopic,
+  getChineseEvidenceSummary,
   getFullStandardProgress,
   getRequirementDistribution,
   requirementLabel,
@@ -77,6 +80,7 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
   const griFiltered = filtered.filter((item) => item.standardType === 'GRI')
 
   const standardProgress = getFullStandardProgress()
+  const requirementDistribution = getRequirementDistribution(dataset.policyDisclosureAnalysis)
 
   return (
     <div className="space-y-5">
@@ -115,24 +119,24 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
           </div>
         </Panel>
 
-        <Panel title="强制/自愿披露状态">
+        <Panel title="披露属性状态">
           <EChart
             className="h-56 w-full"
             option={{
               tooltip: { trigger: 'axis' },
-              color: ['#ef4444', '#10b981', '#f59e0b', '#94a3b8'],
-              grid: { left: 30, right: 16, top: 20, bottom: 30 },
+              color: ['#ef4444', '#10b981', '#f59e0b', '#22c55e', '#38bdf8', '#0f766e', '#94a3b8', '#64748b'],
+              grid: { left: 36, right: 16, top: 20, bottom: 54 },
               xAxis: {
                 type: 'category',
-                data: getRequirementDistribution(dataset.policyDisclosureAnalysis).map((item) => item.name),
-                axisLabel: { interval: 0 },
+                data: requirementDistribution.map((item) => item.name),
+                axisLabel: { interval: 0, rotate: 18, fontSize: 11 },
               },
               yAxis: { type: 'value', minInterval: 1 },
               series: [
                 {
                   type: 'bar',
-                  barWidth: 28,
-                  data: getRequirementDistribution(dataset.policyDisclosureAnalysis).map((item) => item.value),
+                  barWidth: 22,
+                  data: requirementDistribution.map((item) => item.value),
                   itemStyle: { borderRadius: [4, 4, 0, 0] },
                 },
               ],
@@ -176,10 +180,10 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
 
       <Panel title="筛选条件">
         <div className="grid gap-3 md:grid-cols-4">
-          <Select label="维度" value={dimension} onChange={setDimension} options={['all', 'E', 'S', 'G']} format={(value) => (value === 'all' ? '全部维度' : dimensionLabel[value as Dimension])} />
-          <Select label="披露属性" value={requirement} onChange={setRequirement} options={['all', 'mandatory', 'voluntary']} format={(value) => (value === 'all' ? '全部属性' : requirementLabel[value as RequirementType])} />
-          <Select label="披露状态" value={status} onChange={setStatus} options={['all', 'disclosed', 'partial', 'missing']} format={(value) => ({ all: '全部状态', disclosed: '已披露', partial: '部分披露', missing: '未披露' }[value] ?? value)} />
-          <Select label="差距等级" value={gap} onChange={setGap} options={['all', 'major', 'minor', 'none']} format={(value) => ({ all: '全部等级', major: '重大差距', minor: '轻微差距', none: '无差距' }[value] ?? value)} />
+          <Select label="维度" value={dimension} onChange={setDimension} options={['all', 'C', 'E', 'S', 'G']} format={(value) => (value === 'all' ? '全部维度' : dimensionLabel[value as Dimension])} />
+          <Select label="披露属性" value={requirement} onChange={setRequirement} options={['all', 'mandatory', 'conditional', 'voluntary', 'pending']} format={(value) => (value === 'all' ? '全部属性' : requirementLabel[value as RequirementType])} />
+          <Select label="披露状态" value={status} onChange={setStatus} options={['all', 'disclosed', 'partial', 'missing', 'pending']} format={(value) => ({ all: '全部状态', disclosed: '已披露', partial: '部分披露', missing: '未披露', pending: '待确认' }[value] ?? value)} />
+          <Select label="差距等级" value={gap} onChange={setGap} options={['all', 'major', 'minor', 'pending', 'none']} format={(value) => ({ all: '全部等级', major: '重大差距', minor: '轻微差距', pending: '待人工确认', none: '无差距' }[value] ?? value)} />
         </div>
       </Panel>
 
@@ -219,9 +223,18 @@ function DisclosureGapTable({ items }: { items: DisclosureGap[] }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-[1100px] text-left text-sm">
-        <thead>
+    <div className="max-h-[1011px] overflow-auto pr-2 [scrollbar-gutter:stable]">
+      <table className="w-full min-w-[1100px] table-fixed text-left text-sm">
+        <colgroup>
+          <col className="w-[13%]" />
+          <col className="w-[18%]" />
+          <col className="w-[10%]" />
+          <col className="w-[10%]" />
+          <col className="w-[10%]" />
+          <col className="w-[29%]" />
+          <col className="w-[10%]" />
+        </colgroup>
+        <thead className="sticky top-0 z-10">
           <tr className="border-b border-slate-200 bg-slate-50/80 text-xs uppercase text-slate-500">
             <th className="py-3 pr-4 font-semibold">条款</th>
             <th className="py-3 pr-4 font-semibold">议题</th>
@@ -235,28 +248,27 @@ function DisclosureGapTable({ items }: { items: DisclosureGap[] }) {
         <tbody>
           {items.map((item) => (
             <tr key={item.id} className="border-b border-slate-100 align-top transition-colors hover:bg-slate-50 even:bg-slate-50/30">
-              <td className="py-4 pr-4 font-semibold text-slate-950">{item.clauseId}</td>
-              <td className="py-4 pr-4">
+              <td className="py-3 pr-4 font-semibold text-slate-950">{item.clauseId}</td>
+              <td className="py-3 pr-4">
                 <div className="flex flex-col gap-2">
-                  <span className="font-medium text-slate-900">{item.topicName}</span>
+                  <span className="overflow-hidden font-medium leading-5 text-slate-900 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">{getChineseDisclosureTopic(item)}</span>
                   <DimensionBadge value={item.dimension} />
                 </div>
               </td>
-              <td className="py-4 pr-4">
+              <td className="py-3 pr-4">
                 <RequirementBadge value={item.requirementType} />
               </td>
-              <td className="py-4 pr-4">
+              <td className="py-3 pr-4">
                 <DisclosureStatusBadge value={item.disclosureStatus} />
               </td>
-              <td className="py-4 pr-4">
+              <td className="py-3 pr-4">
                 <GapBadge value={item.gapLevel} />
               </td>
-              <td className="py-4 pr-4">
-                <p className="leading-6 text-slate-700">{item.currentDisclosure}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-500">证据：{item.evidence}（{item.sourcePage}）</p>
-                <p className="mt-2 text-xs leading-5 text-emerald-700">建议：{item.recommendation}</p>
+              <td className="py-3 pr-4">
+                <p className="overflow-hidden leading-5 text-slate-700 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">{getChineseEvidenceSummary(item)}</p>
+                <p className="mt-1 overflow-hidden text-xs leading-5 text-emerald-700 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:1]">建议：{getChineseDisclosureRecommendation(item)}</p>
               </td>
-              <td className="py-4 text-right text-lg font-semibold text-slate-950">{item.priority}</td>
+              <td className="py-3 text-right text-lg font-semibold text-slate-950">{item.priority}</td>
             </tr>
           ))}
         </tbody>

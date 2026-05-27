@@ -70,7 +70,7 @@ export function MetricCard({ label, value, hint, icon: Icon, tone, sparkline, de
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <p className="text-sm text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{displayValue}</p>
+          <p className="mt-2 text-4xl font-semibold tracking-tight text-slate-950">{displayValue}</p>
           {delta ? (
             <div className="mt-1.5 flex items-center gap-1 text-xs">
               <span className={delta.direction === 'up' ? 'text-emerald-600' : 'text-rose-500'}>
@@ -87,7 +87,7 @@ export function MetricCard({ label, value, hint, icon: Icon, tone, sparkline, de
           {sparkline ? <Sparkline data={sparkline} tone={tone} /> : null}
         </div>
       </div>
-      <p className="mt-2 text-xs leading-5 text-slate-500">{hint}</p>
+      {hint ? <p className="mt-2 text-xs leading-5 text-slate-500">{hint}</p> : null}
     </section>
   )
 }

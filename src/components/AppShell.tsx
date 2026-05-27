@@ -44,7 +44,7 @@ function BrandWordmark({ compact = false }: { compact?: boolean }) {
       <div
         className={clsx(
           'font-semibold tracking-normal text-[#0d6672]',
-          compact ? 'text-lg' : 'text-[22px]',
+          compact ? 'text-lg' : 'text-2xl',
         )}
       >
         远景能源
@@ -52,7 +52,7 @@ function BrandWordmark({ compact = false }: { compact?: boolean }) {
       <div
         className={clsx(
           'mt-1 whitespace-nowrap font-semibold uppercase tracking-[0.05em] text-[#5b7b80]',
-          compact ? 'text-[10px]' : 'text-[13px]',
+          compact ? 'text-[10px]' : 'text-sm',
         )}
       >
         ESG智能分析系统
@@ -63,8 +63,10 @@ function BrandWordmark({ compact = false }: { compact?: boolean }) {
 
 function SidebarDataSnapshot({ dataset }: { dataset: DemoDataset }) {
   const items = [
+    { label: '分析对象', value: '远景能源' },
     { label: '报告周期', value: `${dataset.meta.reportYear}` },
     { label: '标准口径', value: 'ESRS / GRI' },
+    { label: '条款覆盖', value: `${dataset.standards.esrs.length + dataset.standards.gri.length} 条` },
     { label: '竞对样本', value: `${dataset.companies.length} 家` },
     { label: '舆情样本', value: `Claw ${dataset.publicOpinion.length} 条` },
   ]
@@ -77,9 +79,9 @@ function SidebarDataSnapshot({ dataset }: { dataset: DemoDataset }) {
       </div>
       <div className="space-y-2">
         {items.map((item) => (
-          <div key={item.label} className="flex items-center justify-between gap-3 text-xs">
-            <span className="text-slate-500">{item.label}</span>
-            <span className="font-semibold text-slate-800">{item.value}</span>
+          <div key={item.label} className="flex items-center justify-between gap-2 text-xs">
+            <span className="shrink-0 text-slate-500">{item.label}</span>
+            <span className="whitespace-nowrap font-semibold text-slate-800">{item.value}</span>
           </div>
         ))}
       </div>

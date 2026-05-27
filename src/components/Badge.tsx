@@ -43,24 +43,43 @@ export function Badge({
 }
 
 export function DimensionBadge({ value }: { value: Dimension }) {
-  return <Badge tone={value === 'E' ? 'green' : value === 'S' ? 'blue' : 'amber'}>{dimensionLabel[value]}</Badge>
+  return (
+    <Badge tone={value === 'E' ? 'green' : value === 'S' ? 'blue' : value === 'G' ? 'amber' : 'slate'}>
+      {dimensionLabel[value]}
+    </Badge>
+  )
 }
 
 export function RequirementBadge({ value }: { value: RequirementType }) {
-  return <Badge tone={value === 'mandatory' ? 'red' : 'slate'}>{requirementLabel[value]}</Badge>
+  return (
+    <Badge tone={value === 'mandatory' ? 'red' : value === 'conditional' ? 'amber' : value === 'voluntary' ? 'blue' : 'slate'}>
+      {requirementLabel[value]}
+    </Badge>
+  )
 }
 
 export function GapBadge({ value }: { value: GapLevel }) {
   return (
-    <Badge tone={value === 'major' ? 'red' : value === 'minor' ? 'amber' : 'green'}>
+    <Badge tone={value === 'major' ? 'red' : value === 'minor' ? 'amber' : value === 'pending' ? 'slate' : 'green'}>
       {gapLevelLabel[value]}
     </Badge>
   )
 }
 
 export function DisclosureStatusBadge({ value }: { value: DisclosureStatus }) {
-  const label = value === 'disclosed' ? '已披露' : value === 'partial' ? '部分披露' : '未披露'
-  return <Badge tone={value === 'disclosed' ? 'green' : value === 'partial' ? 'amber' : 'red'}>{label}</Badge>
+  const label =
+    value === 'disclosed'
+      ? '已披露'
+      : value === 'partial'
+        ? '部分披露'
+        : value === 'pending'
+          ? '待确认'
+          : '未披露'
+  return (
+    <Badge tone={value === 'disclosed' ? 'green' : value === 'partial' ? 'amber' : value === 'pending' ? 'slate' : 'red'}>
+      {label}
+    </Badge>
+  )
 }
 
 export function RiskBadge({ value }: { value: RiskLevel }) {
