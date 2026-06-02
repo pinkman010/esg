@@ -21,7 +21,7 @@ const navItems = [
   { to: '/claw', label: 'Claw 舆情监测', icon: Network },
 ]
 
-const pageMeta: Record<string, { title: string; description: string }> = {
+const pageMeta: Record<string, { title: string; description: string; visual?: string }> = {
   '/': {
     title: '首页总览',
     description: 'ESG 披露、竞对议题与 Claw 舆情一体化展示',
@@ -29,35 +29,48 @@ const pageMeta: Record<string, { title: string; description: string }> = {
   '/policy': {
     title: '政策与 ESG 报告披露分析',
     description: '以远景能源 2024 年 ESG 报告为对象，对照 ESRS / GRI 条款识别强制披露缺口和补充建议。',
+    visual: '/visuals/module-policy-disclosure.webp',
   },
   '/benchmark': {
     title: '实质性议题竞对分析',
     description: '固定范围：远景能源、西门子能源、VESTAS、明阳智能、金风科技。对比议题覆盖、披露深度和证据质量。',
+    visual: '/visuals/module-materiality-benchmark.webp',
   },
   '/claw': {
     title: 'Claw 舆情监测',
     description: '展示 Claw 工具抓取后的舆情结果，用于说明外部声量如何影响实质性议题判断。',
+    visual: '/visuals/module-claw-monitor.webp',
   },
 }
 
 function BrandWordmark({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={clsx('leading-none', compact ? 'py-1' : 'py-0.5')}>
-      <div
+    <div className={clsx('flex items-center', compact ? 'gap-2 py-1' : 'gap-3 py-0.5')}>
+      <img
+        src="/brand/envision-logo.svg"
+        alt="远景能源标识"
         className={clsx(
-          'font-semibold tracking-normal text-[#0d6672]',
-          compact ? 'text-lg' : 'text-2xl',
+          'shrink-0 drop-shadow-sm',
+          compact ? 'h-8 w-8' : 'h-10 w-10',
         )}
-      >
-        远景能源
-      </div>
-      <div
-        className={clsx(
-          'mt-1 whitespace-nowrap font-semibold uppercase tracking-[0.05em] text-[#5b7b80]',
-          compact ? 'text-[10px]' : 'text-sm',
-        )}
-      >
-        ESG智能分析系统
+      />
+      <div className="leading-none">
+        <div
+          className={clsx(
+            'font-semibold tracking-normal text-[#0d6672]',
+            compact ? 'text-lg' : 'text-2xl',
+          )}
+        >
+          远景能源
+        </div>
+        <div
+          className={clsx(
+            'mt-1 whitespace-nowrap font-semibold uppercase tracking-[0.05em] text-[#5b7b80]',
+            compact ? 'text-[10px]' : 'text-sm',
+          )}
+        >
+          ESG智能分析系统
+        </div>
       </div>
     </div>
   )
@@ -74,7 +87,7 @@ function SidebarDataSnapshot({ dataset }: { dataset: DemoDataset }) {
   ]
 
   return (
-    <section className="rounded border border-emerald-100 bg-emerald-50/60 p-4">
+    <section className="rounded border border-white/75 bg-white/72 p-4 shadow-sm backdrop-blur-md">
       <div className="mb-3 flex items-center gap-2">
         <div className="h-4 w-1 rounded-full bg-emerald-500" />
         <h2 className="text-sm font-semibold text-slate-950">数据快照</h2>
@@ -131,9 +144,17 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[236px] border-r border-slate-200 bg-white lg:block">
-        <div className="flex h-full flex-col">
-          <div className="border-b border-slate-200 px-7 py-6">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[236px] overflow-hidden border-r border-white/70 bg-white lg:block">
+        <img
+          src="/visuals/sidebar-renewable-energy.webp"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[124%] w-full object-cover object-left-top opacity-[0.48] brightness-95 saturate-125 contrast-125"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.68)_0%,rgba(255,255,255,0.52)_28%,rgba(255,255,255,0.36)_58%,rgba(236,253,245,0.26)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_76%_10%,rgba(20,184,166,0.12),transparent_38%),radial-gradient(circle_at_25%_86%,rgba(16,185,129,0.12),transparent_34%)]" />
+        <div className="relative flex h-full flex-col">
+          <div className="border-b border-white/70 bg-white/52 px-5 py-5 backdrop-blur-md">
             <BrandWordmark />
           </div>
           <nav className="flex-1 space-y-1 px-3 py-5">
@@ -145,10 +166,10 @@ export function AppShell({
                   to={item.to}
                   className={({ isActive }) =>
                     clsx(
-                      'flex items-center gap-3 rounded px-3 py-3 text-sm font-medium transition',
+                      'flex items-center gap-3 rounded border px-3 py-3 text-sm font-medium shadow-sm backdrop-blur-md transition',
                       isActive
-                        ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100'
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
+                        ? 'border-emerald-200/80 bg-white/78 text-emerald-700 ring-1 ring-emerald-100/80'
+                        : 'border-white/45 bg-white/38 text-slate-600 hover:border-white/80 hover:bg-white/68 hover:text-slate-950 hover:shadow-md',
                     )
                   }
                 >
@@ -165,8 +186,25 @@ export function AppShell({
       </aside>
 
       <div className="lg:pl-[236px]">
-        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:px-7">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+        <header className="sticky top-0 z-20 overflow-hidden border-b border-emerald-100/70 bg-white/78 px-4 py-3 backdrop-blur-xl lg:px-7">
+          {currentMeta.visual ? (
+            <img
+              src={currentMeta.visual}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-[0.36] saturate-110"
+            />
+          ) : null}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(16,185,129,0.16),transparent_34%),radial-gradient(circle_at_78%_18%,rgba(14,165,233,0.10),transparent_30%)]" />
+          <div
+            className={clsx(
+              'pointer-events-none absolute inset-0',
+              currentMeta.visual
+                ? 'bg-[linear-gradient(90deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.78)_54%,rgba(255,255,255,0.68)_100%)]'
+                : 'bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(255,255,255,0.62))]',
+            )}
+          />
+          <div className="relative flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="lg:hidden">
                 <BrandWordmark compact />
@@ -180,7 +218,7 @@ export function AppShell({
             </div>
             <div className="flex items-center gap-3">
               {searchOpen ? (
-                <div className="hidden items-center gap-2 rounded border border-emerald-300 bg-white px-3 py-2 shadow-md ring-1 ring-emerald-100 transition md:flex">
+                <div className="hidden items-center gap-2 rounded border border-emerald-200/80 bg-white/75 px-3 py-2 shadow-md ring-1 ring-emerald-100/70 backdrop-blur transition md:flex">
                   <Search className="h-4 w-4 text-emerald-600" />
                   <input
                     autoFocus
@@ -200,18 +238,18 @@ export function AppShell({
                 <button
                   type="button"
                   onClick={() => setSearchOpen(true)}
-                  className="hidden items-center gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-400 transition hover:border-slate-300 hover:text-slate-600 md:flex"
+                  className="hidden items-center gap-2 rounded border border-white/80 bg-white/60 px-3 py-2 text-sm text-slate-500 backdrop-blur transition hover:border-emerald-100 hover:bg-white/85 hover:text-slate-700 md:flex"
                   title="搜索"
                 >
                   <Search className="h-4 w-4" />
                   <span className="text-xs">搜索...</span>
                 </button>
               )}
-              <div className="rounded border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
+              <div className="rounded border border-white/80 bg-white/62 px-3 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur">
                 {dataset.meta.reportYear} 年报告周期
               </div>
               <button
-                className="relative rounded border border-slate-200 bg-white p-2 text-slate-600 transition hover:bg-slate-50 hover:text-slate-800 hover:scale-95 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
+                className="relative rounded border border-white/80 bg-white/62 p-2 text-slate-600 shadow-sm backdrop-blur transition hover:bg-white/85 hover:text-slate-800 hover:scale-95 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
                 type="button"
                 aria-label="通知"
               >
@@ -222,7 +260,7 @@ export function AppShell({
               </button>
             </div>
           </div>
-          <nav className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4 lg:hidden">
+          <nav className="relative mt-3 grid grid-cols-2 gap-2 md:grid-cols-4 lg:hidden">
             {navItems.map((item) => {
               const Icon = item.icon
               return (
@@ -233,8 +271,8 @@ export function AppShell({
                     clsx(
                       'flex items-center justify-center gap-2 rounded border px-2 py-2 text-xs font-semibold',
                       isActive
-                        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                        : 'border-slate-200 bg-white text-slate-600',
+                        ? 'border-emerald-200/90 bg-emerald-50/85 text-emerald-700'
+                        : 'border-white/80 bg-white/55 text-slate-600 backdrop-blur',
                     )
                   }
                 >

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Envision logo">
+  <defs>
+    <linearGradient id="envisionSwirlA" x1="8" y1="13" x2="52" y2="23" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b5f6a" />
+      <stop offset="0.55" stop-color="#0f766e" />
+      <stop offset="1" stop-color="#1fa37d" />
+    </linearGradient>
+    <linearGradient id="envisionSwirlB" x1="53" y1="12" x2="16" y2="51" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#23b48f" />
+      <stop offset="0.58" stop-color="#11998a" />
+      <stop offset="1" stop-color="#0b5f6a" />
+    </linearGradient>
+    <linearGradient id="envisionSwirlC" x1="13" y1="52" x2="56" y2="35" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#62c993" />
+      <stop offset="0.48" stop-color="#1fa37d" />
+      <stop offset="1" stop-color="#0f766e" />
+    </linearGradient>
+  </defs>
+  <path
+    fill="url(#envisionSwirlA)"
+    d="M12.2 23.4C17 12.8 29.7 7 41 10.8c6.2 2.1 10.7 6.8 12.8 12.5-6.3-5.6-15.1-8-23.5-5.6-5.7 1.6-10.4 5.2-13.6 10.1-1.8-.9-3.3-2.4-4.5-4.4Z"
+  />
+  <path
+    fill="url(#envisionSwirlB)"
+    d="M52.4 41.3c-6.9 9.4-20.6 11.8-30.3 5.1-5.3-3.7-8.1-9.5-8.2-15.6 4.3 7.2 12.1 11.9 20.8 11.6 6-.2 11.3-2.7 15.5-6.9 1.3 1.4 2 3.4 2.2 5.8Z"
+  />
+  <path
+    fill="url(#envisionSwirlC)"
+    d="M12.1 37.5c1.7-11.5 12.2-20.3 24-19.5 6.5.4 12 3.8 15.5 8.8-7.7-3.4-16.8-2.8-24.1 2.1-5 3.4-8.3 8.2-9.8 13.9-2.1-.7-3.9-2.5-5.6-5.3Z"
+    opacity="0.92"
+  />
+  <path
+    fill="#0b5f6a"
+    d="M22.7 31.8c3.6-4.4 9.6-6.6 15.1-5.3 3 .7 5.5 2.4 7.3 4.7-4.1-1.2-8.8-.6-12.5 2-2.7 1.9-4.6 4.5-5.5 7.5-1.9-1.5-3.4-4.5-4.4-8.9Z"
+    opacity="0.2"
+  />
+</svg>

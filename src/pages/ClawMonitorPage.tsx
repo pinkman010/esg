@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { AlertTriangle, FileText, Frown, Megaphone, RotateCcw, ThumbsDown } from 'lucide-react'
-import type { DemoDataset, RiskLevel, Sentiment } from '../types/dataset'
+import type { DemoDataset, PublicOpinionItem, RiskLevel, Sentiment } from '../types/dataset'
 import { RiskBadge, SentimentBadge } from '../components/Badge'
 import { EChart } from '../components/EChart'
+import { MetricCard } from '../components/MetricCard'
 import { Panel } from '../components/Panel'
 import { Select } from '../components/Select'
-import { useCountUp } from '../hooks/useCountUp'
 import {
   formatNumber,
   getOpinionTopicHotspots,
@@ -49,14 +49,58 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
     () => filtered.filter((item) => item.sentiment === 'negative').length,
     [filtered],
   )
+  const opinionCountSparkline = useMemo(
+    () => trend.map((item) => item.high + item.medium + item.low),
+    [trend],
+  )
+  const reachSparkline = useMemo(
+    () =>
+      getOpinionDailySparkline(filtered, (items) =>
+        Math.round(items.reduce((sum, item) => sum + item.reach, 0) / Math.max(items.length, 1)),
+      ),
+    [filtered],
+  )
+  const highRiskSparkline = useMemo(() => trend.map((item) => item.high), [trend])
+  const negativeSparkline = useMemo(
+    () => getOpinionDailySparkline(filtered, (items) => items.filter((item) => item.sentiment === 'negative').length),
+    [filtered],
+  )
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-4 md:grid-cols-4">
-        <Summary label="舆情条数" value={`${filtered.length}`} hint="当前筛选结果" icon={FileText} tone="blue" />
-        <Summary label="平均声量指数" value={formatNumber(averageReachIndex)} hint="当前筛选舆情的平均关注强度" icon={Megaphone} tone="green" />
-        <Summary label="高风险事件" value={`${highRiskCount}`} hint="需进入披露关注" icon={AlertTriangle} tone="red" />
-        <Summary label="负面舆情" value={`${negativeCount}`} hint="关联实质性议题" icon={ThumbsDown} tone="amber" />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <MetricCard
+          label="舆情条数"
+          value={`${filtered.length}`}
+          hint="当前筛选结果"
+          icon={FileText}
+          tone="blue"
+          sparkline={opinionCountSparkline}
+        />
+        <MetricCard
+          label="平均声量指数"
+          value={formatNumber(averageReachIndex)}
+          hint="当前筛选舆情的平均关注强度"
+          icon={Megaphone}
+          tone="green"
+          sparkline={reachSparkline}
+        />
+        <MetricCard
+          label="高风险事件"
+          value={`${highRiskCount}`}
+          hint="需进入披露关注"
+          icon={AlertTriangle}
+          tone="red"
+          sparkline={highRiskSparkline}
+        />
+        <MetricCard
+          label="负面舆情"
+          value={`${negativeCount}`}
+          hint="关联实质性议题"
+          icon={ThumbsDown}
+          tone="amber"
+          sparkline={negativeSparkline}
+        />
       </div>
 
       <Panel title="声量指数说明">
@@ -181,39 +225,19 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
   )
 }
 
-const summaryToneMap = {
-  green: 'bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-700',
-  blue: 'bg-gradient-to-br from-sky-50 to-sky-100 text-sky-700',
-  amber: 'bg-gradient-to-br from-amber-50 to-amber-100 text-amber-700',
-  red: 'bg-gradient-to-br from-rose-50 to-rose-100 text-rose-700',
+function getOpinionDailySparkline(
+  items: PublicOpinionItem[],
+  getValue: (items: PublicOpinionItem[]) => number,
+) {
+  const grouped = new Map<string, PublicOpinionItem[]>()
+
+  items.forEach((item) => {
+    const day = item.publishedAt.slice(5, 10)
+    grouped.set(day, [...(grouped.get(day) ?? []), item])
+  })
+
+  return Array.from(grouped.entries())
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([, values]) => getValue(values))
 }
-
-const summaryBorderMap = {
-  green: 'border-emerald-200/60',
-  blue: 'border-sky-200/60',
-  amber: 'border-amber-200/60',
-  red: 'border-rose-200/60',
-}
-
-function Summary({ label, value, hint, icon: Icon, tone }: { label: string; value: string; hint: string; icon: React.ElementType; tone: 'green' | 'blue' | 'amber' | 'red' }) {
-  const numericValue = parseInt(value.replace(/,/g, ''), 10) || 0
-  const animatedValue = useCountUp(numericValue)
-  const displayValue = Number.isNaN(numericValue) ? value : animatedValue.toLocaleString('zh-CN')
-
-  return (
-    <section className={`panel border ${summaryBorderMap[tone]}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-semibold text-slate-950">{displayValue}</p>
-        </div>
-        <span className={`rounded-lg p-2 ${summaryToneMap[tone]}`}>
-          <Icon className="h-5 w-5" />
-        </span>
-      </div>
-      <p className="mt-2 text-xs text-slate-500">{hint}</p>
-    </section>
-  )
-}
-
 
