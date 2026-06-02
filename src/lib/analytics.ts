@@ -328,13 +328,10 @@ export const getAiFlowNodes = (dataset: DemoDataset): AiFlowNode[] => {
 }
 
 export const countBy = <T extends string>(items: T[]) =>
-  items.reduce<Record<T, number>>(
-    (result, item) => ({
-      ...result,
-      [item]: (result[item] ?? 0) + 1,
-    }),
-    {} as Record<T, number>,
-  )
+  items.reduce<Record<T, number>>((result, item) => {
+    result[item] = (result[item] ?? 0) + 1
+    return result
+  }, {} as Record<T, number>)
 
 export const sortByPriority = (items: DisclosureGap[]) =>
   [...items].sort((left, right) => right.priority - left.priority)

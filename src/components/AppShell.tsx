@@ -1,3 +1,4 @@
+import { useLayoutEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   BarChart3,
@@ -98,6 +99,34 @@ export function AppShell({
 }) {
   const location = useLocation()
   const currentMeta = pageMeta[location.pathname] ?? pageMeta['/']
+
+  useLayoutEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration
+
+    window.history.scrollRestoration = 'manual'
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration
+    }
+  }, [])
+
+  useLayoutEffect(() => {
+    const { style } = document.documentElement
+    const previousScrollBehavior = style.scrollBehavior
+
+    style.scrollBehavior = 'auto'
+    window.scrollTo({ top: 0, left: 0 })
+    const frameId = window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0 })
+      style.scrollBehavior = previousScrollBehavior
+    })
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      style.scrollBehavior = previousScrollBehavior
+    }
+  }, [location.pathname])
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[236px] border-r border-slate-200 bg-white lg:block">

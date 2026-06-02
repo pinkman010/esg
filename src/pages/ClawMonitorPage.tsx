@@ -33,17 +33,28 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
     [company, dataset.publicOpinion, risk, sentiment],
   )
 
-  const trend = getOpinionTrend(filtered)
-  const hotspots = getOpinionTopicHotspots(filtered).slice(0, 6)
-  const averageReachIndex = Math.round(filtered.reduce((sum, item) => sum + item.reach, 0) / Math.max(filtered.length, 1))
+  const trend = useMemo(() => getOpinionTrend(filtered), [filtered])
+  const hotspots = useMemo(() => getOpinionTopicHotspots(filtered).slice(0, 6), [filtered])
+  const averageReachIndex = useMemo(
+    () => Math.round(filtered.reduce((sum, item) => sum + item.reach, 0) / Math.max(filtered.length, 1)),
+    [filtered],
+  )
+  const highRiskCount = useMemo(
+    () => filtered.filter((item) => item.riskLevel === 'high').length,
+    [filtered],
+  )
+  const negativeCount = useMemo(
+    () => filtered.filter((item) => item.sentiment === 'negative').length,
+    [filtered],
+  )
 
   return (
     <div className="space-y-5">
       <div className="grid gap-4 md:grid-cols-4">
         <Summary label="舆情条数" value={`${filtered.length}`} hint="当前筛选结果" icon={FileText} tone="blue" />
         <Summary label="平均声量指数" value={formatNumber(averageReachIndex)} hint="当前筛选舆情的平均关注强度" icon={Megaphone} tone="green" />
-        <Summary label="高风险事件" value={`${filtered.filter((item) => item.riskLevel === 'high').length}`} hint="需进入披露关注" icon={AlertTriangle} tone="red" />
-        <Summary label="负面舆情" value={`${filtered.filter((item) => item.sentiment === 'negative').length}`} hint="关联实质性议题" icon={ThumbsDown} tone="amber" />
+        <Summary label="高风险事件" value={`${highRiskCount}`} hint="需进入披露关注" icon={AlertTriangle} tone="red" />
+        <Summary label="负面舆情" value={`${negativeCount}`} hint="关联实质性议题" icon={ThumbsDown} tone="amber" />
       </div>
 
       <Panel title="声量指数说明">

@@ -22,24 +22,32 @@ const formatZodError = (error: unknown) => {
 
 export const demoDataRepository: DemoDataRepository = {
   async load() {
-    const [response, fullStandardResponse] = await Promise.all([
-      fetch(datasetUrl, { cache: 'no-store' }),
-      fetch(fullStandardDisclosureUrl, { cache: 'no-store' }),
-    ])
-
+    // 先加载基础数据，确保首屏尽快可用
+    const response = await fetch(datasetUrl, { cache: 'no-store' })
     if (!response.ok) {
       throw new Error(`无法加载演示数据：${response.status} ${response.statusText}`)
     }
-    if (!fullStandardResponse.ok) {
-      throw new Error(`无法加载全量标准库数据：${fullStandardResponse.status} ${fullStandardResponse.statusText}`)
+    const base = await response.json()
+
+    // 再加载全量标准库大数据（容错：即使失败也不影响基础展示）
+    let fullStandard: {
+      standards?: unknown
+      policyDisclosureAnalysis?: unknown
+      auditTrail?: unknown[]
+    } = {}
+    try {
+      const fullStandardResponse = await fetch(fullStandardDisclosureUrl, { cache: 'no-store' })
+      if (fullStandardResponse.ok) {
+        fullStandard = await fullStandardResponse.json()
+      }
+    } catch {
+      // 全量数据加载失败时静默降级，使用空值填充
     }
 
-    const base = await response.json()
-    const fullStandard = await fullStandardResponse.json()
     const raw = {
       ...base,
-      standards: fullStandard.standards,
-      policyDisclosureAnalysis: fullStandard.policyDisclosureAnalysis,
+      standards: fullStandard.standards ?? [],
+      policyDisclosureAnalysis: fullStandard.policyDisclosureAnalysis ?? [],
       auditTrail: [...(base.auditTrail ?? []), ...(fullStandard.auditTrail ?? [])],
     }
     const parsed = demoDatasetSchema.safeParse(raw)

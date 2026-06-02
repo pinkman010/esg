@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useCountUp } from '../hooks/useCountUp'
 import type { LucideIcon } from 'lucide-react'
 
@@ -33,21 +34,23 @@ function Sparkline({ data, tone }: { data: number[]; tone: MetricCardProps['tone
     amber: '#f59e0b',
     red: '#ef4444',
   }
-  const min = Math.min(...data)
-  const max = Math.max(...data)
-  const range = max - min || 1
-  const width = 64
-  const height = 24
-  const points = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1)) * width
-      const y = height - ((v - min) / range) * height
-      return `${x},${y}`
-    })
-    .join(' ')
+  const points = useMemo(() => {
+    const min = Math.min(...data)
+    const max = Math.max(...data)
+    const range = max - min || 1
+    const width = 64
+    const height = 24
+    return data
+      .map((v, i) => {
+        const x = (i / (data.length - 1)) * width
+        const y = height - ((v - min) / range) * height
+        return `${x},${y}`
+      })
+      .join(' ')
+  }, [data])
 
   return (
-    <svg width={width} height={height} className="opacity-70">
+    <svg width={64} height={24} className="opacity-70">
       <polyline
         points={points}
         fill="none"

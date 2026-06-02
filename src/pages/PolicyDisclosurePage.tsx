@@ -1,6 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import * as echarts from 'echarts'
-import type { EChartsOption } from 'echarts'
+import { useEffect, useMemo, useState } from 'react'
 import { FileSearch } from 'lucide-react'
 import type { DemoDataset, Dimension, DisclosureGap, DisclosureStatus, GapLevel, RequirementType } from '../types/dataset'
 import {
@@ -9,6 +7,7 @@ import {
   GapBadge,
   RequirementBadge,
 } from '../components/Badge'
+import { EChart } from '../components/EChart'
 import { Panel } from '../components/Panel'
 import { useCountUp } from '../hooks/useCountUp'
 import {
@@ -86,41 +85,6 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
     [dataset.policyDisclosureAnalysis],
   )
 
-  const barChartOptions = useMemo(
-    () => {
-      const createOption = (collapsed: boolean): EChartsOption => ({
-        tooltip: { trigger: 'axis' as const },
-        color: ['#ef4444', '#10b981', '#f59e0b', '#22c55e', '#38bdf8', '#0f766e', '#94a3b8', '#64748b'],
-        grid: { left: 36, right: 16, top: 20, bottom: 54 },
-        xAxis: {
-          type: 'category' as const,
-          data: requirementDistribution.map((item) => item.name),
-          axisLabel: { interval: 0, rotate: 18, fontSize: 11 },
-        },
-        yAxis: { type: 'value' as const, minInterval: 1 },
-        series: [
-          {
-            type: 'bar' as const,
-            barWidth: 22,
-            data: requirementDistribution.map((item) => (collapsed ? 0 : item.value)),
-            itemStyle: { borderRadius: [4, 4, 0, 0] as [number, number, number, number] },
-            animation: true,
-            animationDuration: 0,
-            animationDurationUpdate: 1300,
-            animationEasingUpdate: 'cubicOut' as const,
-            animationDelayUpdate: (idx: number) => idx * 110,
-          },
-        ],
-      })
-
-      return {
-        initial: createOption(true),
-        expanded: createOption(false),
-      }
-    },
-    [requirementDistribution],
-  )
-
   return (
     <div className="space-y-5">
       <div className="grid gap-5 xl:grid-cols-[0.9fr,1.1fr]">
@@ -157,11 +121,7 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
         </Panel>
 
         <Panel title="披露属性状态">
-          <AnimatedBarChart
-            className="h-56 w-full"
-            initialOption={barChartOptions.initial}
-            option={barChartOptions.expanded}
-          />
+          <DisclosureAttributeChart requirementDistribution={requirementDistribution} />
         </Panel>
       </div>
 
@@ -218,6 +178,86 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
   )
 }
 
+type RequirementDistributionItem = {
+  name: string
+  value: number
+}
+
+function DisclosureAttributeChart({
+  requirementDistribution,
+}: {
+  requirementDistribution: RequirementDistributionItem[]
+}) {
+  const requirementValues = useMemo(
+    () => requirementDistribution.map((item) => item.value),
+    [requirementDistribution],
+  )
+  const animatedRequirementValues = useAnimatedBarValues(requirementValues, 760, 90)
+  const requirementAxisMax = Math.ceil(Math.max(...requirementValues, 1) * 1.15)
+
+  const barChartOption = useMemo(
+    () => ({
+      animation: false,
+      tooltip: { trigger: 'axis' as const },
+      color: ['#ef4444', '#10b981', '#f59e0b', '#22c55e', '#38bdf8', '#0f766e', '#94a3b8', '#64748b'],
+      grid: { left: 36, right: 16, top: 20, bottom: 54 },
+      xAxis: {
+        type: 'category' as const,
+        data: requirementDistribution.map((item) => item.name),
+        axisLabel: { interval: 0, rotate: 18, fontSize: 11 },
+      },
+      yAxis: { type: 'value' as const, min: 0, max: requirementAxisMax, minInterval: 1 },
+      series: [
+        {
+          type: 'bar' as const,
+          barWidth: 22,
+          data: animatedRequirementValues,
+          itemStyle: { borderRadius: [4, 4, 0, 0] },
+        },
+      ],
+    }),
+    [animatedRequirementValues, requirementAxisMax, requirementDistribution],
+  )
+
+  return <EChart option={barChartOption} className="h-56 w-full" />
+}
+
+function easeOutCubic(progress: number) {
+  return 1 - Math.pow(1 - progress, 3)
+}
+
+function useAnimatedBarValues(targets: number[], duration = 760, delayStep = 90) {
+  const [values, setValues] = useState(() => targets.map(() => 0))
+  const targetsKey = targets.join('|')
+
+  useEffect(() => {
+    let rafId: number
+    const startTime = performance.now()
+    const totalDuration = duration + Math.max(0, targets.length - 1) * delayStep
+
+    setValues(targets.map(() => 0))
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime
+      setValues(
+        targets.map((target, index) => {
+          const progress = Math.min(Math.max((elapsed - index * delayStep) / duration, 0), 1)
+          return Math.round(easeOutCubic(progress) * target)
+        }),
+      )
+
+      if (elapsed < totalDuration) {
+        rafId = requestAnimationFrame(tick)
+      }
+    }
+
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [delayStep, duration, targetsKey])
+
+  return values
+}
+
 function AnimatedProgressBar({ target }: { target: number }) {
   const animated = useCountUp(target, 700)
   return (
@@ -228,41 +268,6 @@ function AnimatedProgressBar({ target }: { target: number }) {
       />
     </div>
   )
-}
-
-function AnimatedBarChart({
-  className,
-  initialOption,
-  option,
-}: {
-  className?: string
-  initialOption: EChartsOption
-  option: EChartsOption
-}) {
-  const containerRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (!containerRef.current) {
-      return undefined
-    }
-
-    const chart = echarts.init(containerRef.current, undefined, { renderer: 'canvas' })
-    chart.setOption(initialOption, true)
-    const timer = window.setTimeout(() => {
-      chart.setOption(option)
-    }, 420)
-
-    const resizeObserver = new ResizeObserver(() => chart.resize())
-    resizeObserver.observe(containerRef.current)
-
-    return () => {
-      window.clearTimeout(timer)
-      resizeObserver.disconnect()
-      chart.dispose()
-    }
-  }, [initialOption, option])
-
-  return <div ref={containerRef} className={className ?? 'h-72 w-full'} />
 }
 
 function SummaryStat({ label, value }: { label: string; value: string }) {
