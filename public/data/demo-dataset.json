@@ -2,8 +2,8 @@
   "meta": {
     "projectName": "远景能源 ESG 披露分析演示数据集",
     "reportYear": 2024,
-    "generatedAt": "2026-05-26T15:30:08+08:00",
-    "dataVersion": "demo-v2-evidence-chain"
+    "generatedAt": "2026-06-03T11:18:51+08:00",
+    "dataVersion": "demo-v3-claw-2026-06-03"
   },
   "companies": [
     {
@@ -3169,6 +3169,156 @@
       "reach": 55,
       "summary": "金风科技一季度外部销售容量同比增长 133.45%，收入和净利润提升，订单积压达 53.9GW；但毛利率、招标价格波动和营运现金流仍需跟踪，风险等级保持中等。",
       "clawTaskId": "claw-2026-05-26-007"
+    },
+    {
+      "id": "po-claw-2026-06-03-001",
+      "companyId": "envision",
+      "companyName": "远景能源",
+      "topicId": "climate-ghg",
+      "topicName": "气候变化与温室气体排放",
+      "title": "远景集团在 SNEC 2026 推出 AI 组串式光伏逆变器",
+      "source": "上海证券报/东方财富",
+      "publishedAt": "2026-06-02T09:00:00+08:00",
+      "sentiment": "positive",
+      "riskLevel": "low",
+      "reach": 78,
+      "summary": "2026 SNEC 开幕后，远景集团以新型电力系统提供商定位推出新一代 AI 组串式光伏逆变器，强化其 AI+能源和综合能源服务叙事。",
+      "clawTaskId": "claw-2026-06-03-001"
+    },
+    {
+      "id": "po-claw-2026-06-03-002",
+      "companyId": "envision",
+      "companyName": "远景能源",
+      "topicId": "sustainable-supply-chain",
+      "topicName": "供应链责任管理",
+      "title": "Envision 与 Impact Electrons Siam 推进老挝未来能源系统",
+      "source": "Envision Energy / PR Newswire",
+      "publishedAt": "2026-06-02T09:00:00+08:00",
+      "sentiment": "positive",
+      "riskLevel": "low",
+      "reach": 74,
+      "summary": "远景与 Impact Electrons Siam 推进老挝大型未来能源系统，项目涉及区域清洁能源供应、跨境协同和可持续基础设施建设。",
+      "clawTaskId": "claw-2026-06-03-002"
+    },
+    {
+      "id": "po-claw-2026-06-03-003",
+      "companyId": "envision",
+      "companyName": "远景能源",
+      "topicId": "product-quality-customer-responsibility",
+      "topicName": "产品质量与客户责任",
+      "title": "远景储能项目扩张带动海外交付能力与质量管理关注",
+      "source": "ESS News / PR Newswire",
+      "publishedAt": "2026-05-29T09:00:00+08:00",
+      "sentiment": "neutral",
+      "riskLevel": "medium",
+      "reach": 63,
+      "summary": "远景海外储能布局持续受到关注，融资和项目扩张提升交付能力，同时也使跨区域质量管理、客户履约与售后责任成为舆情观察点。",
+      "clawTaskId": "claw-2026-06-03-003"
+    },
+    {
+      "id": "po-claw-2026-06-03-004",
+      "companyId": "vestas",
+      "companyName": "Vestas",
+      "topicId": "energy-efficiency",
+      "topicName": "能源使用与能效管理",
+      "title": "Vestas 获美国 673MW 风机订单并纳入长期服务协议",
+      "source": "Vestas / Windtech International",
+      "publishedAt": "2026-05-27T09:00:00+08:00",
+      "sentiment": "positive",
+      "riskLevel": "low",
+      "reach": 82,
+      "summary": "Vestas 获得美国 673MW 风机订单并配套服务协议，持续强化其北美风电交付能力和运维服务收入稳定性。",
+      "clawTaskId": "claw-2026-06-03-004"
+    },
+    {
+      "id": "po-claw-2026-06-03-005",
+      "companyId": "vestas",
+      "companyName": "Vestas",
+      "topicId": "sustainable-supply-chain",
+      "topicName": "供应链可持续管理",
+      "title": "Vestas 欧洲海上风电供应链本地化计划继续获得关注",
+      "source": "Vestas",
+      "publishedAt": "2026-05-28T09:00:00+08:00",
+      "sentiment": "positive",
+      "riskLevel": "low",
+      "reach": 70,
+      "summary": "Vestas 苏格兰海上风电机舱和轮毂工厂计划被持续引用，反映欧洲风电供应链本地化、就业和产业韧性议题升温。",
+      "clawTaskId": "claw-2026-06-03-005"
+    },
+    {
+      "id": "po-claw-2026-06-03-006",
+      "companyId": "siemens-energy",
+      "companyName": "Siemens Energy",
+      "topicId": "esg-governance",
+      "topicName": "公司治理与可持续发展治理",
+      "title": "Siemens Energy 上调 2026 财年收入展望，订单积压仍处高位",
+      "source": "Siemens Energy",
+      "publishedAt": "2026-05-30T09:00:00+08:00",
+      "sentiment": "positive",
+      "riskLevel": "low",
+      "reach": 80,
+      "summary": "Siemens Energy 二季度业绩披露后上调 2026 财年收入增长展望，订单积压维持高位，治理和经营韧性信号增强。",
+      "clawTaskId": "claw-2026-06-03-006"
+    },
+    {
+      "id": "po-claw-2026-06-03-007",
+      "companyId": "siemens-energy",
+      "companyName": "Siemens Energy",
+      "topicId": "product-quality-customer-responsibility",
+      "topicName": "产品质量与客户责任",
+      "title": "Siemens Gamesa 风机业务恢复仍被视为集团执行风险",
+      "source": "Siemens Energy / Cinco Dias",
+      "publishedAt": "2026-05-30T09:00:00+08:00",
+      "sentiment": "neutral",
+      "riskLevel": "medium",
+      "reach": 66,
+      "summary": "Siemens Gamesa 修复进展虽有改善，但风机业务恢复仍影响集团利润质量，产品质量、项目执行和客户交付继续是外部关注点。",
+      "clawTaskId": "claw-2026-06-03-007"
+    },
+    {
+      "id": "po-claw-2026-06-03-008",
+      "companyId": "mingyang",
+      "companyName": "Mingyang",
+      "topicId": "business-ethics-compliance",
+      "topicName": "商业道德与合规经营",
+      "title": "Mingyang 欧洲制造基地评估延续英国安全审查后的合规压力",
+      "source": "IndexBox / Reuters",
+      "publishedAt": "2026-05-29T09:00:00+08:00",
+      "sentiment": "negative",
+      "riskLevel": "high",
+      "reach": 76,
+      "summary": "英国安全审查影响延续后，Mingyang 转向评估欧洲大陆制造基地，海外市场准入、国家安全审查和合规沟通压力继续上升。",
+      "clawTaskId": "claw-2026-06-03-008"
+    },
+    {
+      "id": "po-claw-2026-06-03-009",
+      "companyId": "mingyang",
+      "companyName": "Mingyang",
+      "topicId": "sustainable-supply-chain",
+      "topicName": "供应链可持续管理",
+      "title": "Mingyang 加入 Norwegian Offshore Wind 强化欧洲供应链接触",
+      "source": "Norwegian Offshore Wind",
+      "publishedAt": "2026-05-28T09:00:00+08:00",
+      "sentiment": "neutral",
+      "riskLevel": "medium",
+      "reach": 58,
+      "summary": "Mingyang Europe 加入 Norwegian Offshore Wind，被视为其加强欧洲供应链和产业生态接触的动作，但也伴随本地化合规与利益相关方沟通压力。",
+      "clawTaskId": "claw-2026-06-03-009"
+    },
+    {
+      "id": "po-claw-2026-06-03-010",
+      "companyId": "goldwind",
+      "companyName": "金风科技",
+      "topicId": "esg-governance",
+      "topicName": "公司治理与可持续发展治理",
+      "title": "金风科技股东大会批准回购授权与薪酬制度修订",
+      "source": "HKEX / MiniChart",
+      "publishedAt": "2026-05-26T18:00:00+08:00",
+      "sentiment": "neutral",
+      "riskLevel": "medium",
+      "reach": 54,
+      "summary": "金风科技股东大会通过回购授权和薪酬制度修订，治理安排、激励约束和资本管理成为投资者关注的公司治理信号。",
+      "clawTaskId": "claw-2026-06-03-010"
     }
   ],
   "auditTrail": [
@@ -3243,6 +3393,14 @@
       "action": "normalize_public_opinion_reach",
       "target": "Claw 舆情监测",
       "result": "将人数式触达估算值转换为 10-100 声量指数，并采用平均指数作为汇总和热点议题口径"
+    },
+    {
+      "id": "audit-010",
+      "time": "2026-06-03T11:18:51+08:00",
+      "actor": "codex-web-opinion-refresh",
+      "action": "refresh_public_opinion",
+      "target": "Claw 舆情监测",
+      "result": "按现有展示字段补充 10 条截至 2026-06-03 的公开舆情，五家固定公司各 9 条，并保留 2 条行业级信号用于审计回溯。"
     }
   ]
 }
