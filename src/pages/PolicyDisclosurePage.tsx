@@ -67,6 +67,19 @@ const fullStandardSummary = {
   ],
 }
 
+const priorityFactors = [
+  { name: '披露状态与差距等级', weight: '50%', desc: '未披露、部分披露、待人工确认和已披露对应不同基础分；重大差距和轻微差距优先进入复核。' },
+  { name: '披露属性', weight: '25%', desc: '强制披露通常高于条件性披露，条件性披露高于自愿披露；属性待确认按保守复核口径处理。' },
+  { name: 'ESG 维度', weight: '15%', desc: '环境、社会、治理和综合维度结合监管关注度、行业相关性和报告补强价值做调节。' },
+  { name: '证据与适用性', weight: '10%', desc: '报告页码、关键词命中和适用性判断用于辅助排序；命中线索不等同于披露已经完整。' },
+]
+
+const priorityBands = [
+  { range: '80+', label: '优先补强', tone: 'text-rose-700', border: 'border-l-rose-500', desc: '通常对应重大差距，或高要求属性下的部分披露项目，建议优先复核并补充披露。' },
+  { range: '60-79', label: '持续复核', tone: 'text-amber-700', border: 'border-l-amber-400', desc: '通常对应轻微差距或待人工确认项目，重点核对口径、边界、量化指标和适用性。' },
+  { range: '60 以下', label: '低优先级', tone: 'text-emerald-700', border: 'border-l-emerald-500', desc: '通常对应已披露或补强紧迫性较低项目，后续保持证据、页码和披露口径可追溯。' },
+]
+
 export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
   const [dimension, setDimension] = useState<FilterValue<Dimension>>('all')
   const [requirement, setRequirement] = useState<FilterValue<RequirementType>>('all')
@@ -158,7 +171,7 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
 
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-slate-950">高优先级缺口 Top 20</p>
+              <p className="text-sm font-semibold text-slate-950">高优先级缺口 Top 10</p>
               <p className="text-xs text-slate-500">规则初筛结果，需人工复核</p>
             </div>
             <TopGapTable items={fullStandardSummary.topGaps} />
@@ -181,6 +194,10 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
 
       <Panel title={`GRI 披露差距分析结果（${griFiltered.length}）`}>
         <DisclosureGapTable items={griFiltered} onReset={() => { setDimension('all'); setRequirement('all'); setStatus('all'); setGap('all') }} />
+      </Panel>
+
+      <Panel title="优先级评分说明">
+        <PriorityScoringExplanation />
       </Panel>
     </div>
   )
@@ -294,6 +311,51 @@ function SummaryStat({ label, value }: { label: string; value: string }) {
     <div className="subpanel-muted px-4 py-3">
       <p className="text-xs font-semibold text-slate-500">{label}</p>
       <p className="mt-2 text-2xl font-semibold text-slate-950">{displayValue}</p>
+    </div>
+  )
+}
+
+function PriorityScoringExplanation() {
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 lg:grid-cols-[0.95fr,1.05fr]">
+        <div className="subpanel-accent p-4">
+          <p className="text-sm font-semibold text-emerald-900">优先级是披露缺口的规则初筛排序分，满分 100 分。</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">
+            分数用于判断哪些条款更适合优先复核和补强，不能直接等同于最终合规结论、处罚风险或企业 ESG 实际绩效。
+          </p>
+        </div>
+        <div className="subpanel-muted p-4">
+          <p className="text-sm font-semibold text-slate-950">计算口径</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">
+            规则按披露状态与差距等级 50%、披露属性 25%、ESG 维度 15%、证据与适用性 10% 加权形成排序分；所有结果仍需人工复核确认。
+          </p>
+        </div>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-4">
+        {priorityFactors.map((item) => (
+          <div key={item.name} className="subpanel-muted p-3">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-slate-950">{item.name}</p>
+              <span className="rounded bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">{item.weight}</span>
+            </div>
+            <p className="mt-2 text-xs leading-5 text-slate-600">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        {priorityBands.map((item) => (
+          <div key={item.range} className={`subpanel p-3 border-l-4 ${item.border}`}>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-semibold text-slate-950">{item.range}</span>
+              <span className={`text-xs font-semibold ${item.tone}`}>{item.label}</span>
+            </div>
+            <p className="mt-2 text-xs leading-5 text-slate-600">{item.desc}</p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

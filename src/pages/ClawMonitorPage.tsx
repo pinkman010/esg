@@ -110,29 +110,6 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
         />
       </div>
 
-      <Panel title="声量指数说明">
-        <div className="grid gap-3 lg:grid-cols-[1fr,1fr,1fr]">
-          <div className="subpanel-muted p-4">
-            <p className="text-sm font-semibold text-slate-950">平均声量指数</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              表示当前筛选范围内单条舆情的平均关注强度，用来判断外部关注是否集中升温。
-            </p>
-          </div>
-          <div className="subpanel-muted p-4">
-            <p className="text-sm font-semibold text-slate-950">单条指数来源</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              单条舆情指数由 Claw 综合媒体来源、转载引用、平台传播范围和事件热度估算，范围为 10-100。
-            </p>
-          </div>
-          <div className="subpanel p-4 border-amber-100 bg-amber-50/70">
-            <p className="text-sm font-semibold text-amber-900">使用限制</p>
-            <p className="mt-2 text-sm leading-6 text-slate-700">
-              声量指数是相对强度指标，不代表精确阅读人数或官方流量；筛选条件变化后，平均指数和热点议题会同步重算。
-            </p>
-          </div>
-        </div>
-      </Panel>
-
       <div className="grid gap-5 xl:grid-cols-[1.2fr,0.8fr]">
         <Panel
           title="风险趋势"
@@ -227,6 +204,29 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
             </div>
           </div>
         )}
+      </Panel>
+
+      <Panel title="声量指数说明">
+        <div className="grid gap-3 lg:grid-cols-[1fr,1fr,1fr]">
+          <div className="subpanel-muted p-4">
+            <p className="text-sm font-semibold text-slate-950">平均声量指数</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              表示当前筛选范围内单条舆情的平均关注强度，用来判断外部关注是否集中升温。
+            </p>
+          </div>
+          <div className="subpanel-muted p-4">
+            <p className="text-sm font-semibold text-slate-950">单条指数来源</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              单条舆情指数由 Claw 综合媒体来源、转载引用、平台传播范围和事件热度估算，范围为 10-100。
+            </p>
+          </div>
+          <div className="subpanel p-4 border-amber-100 bg-amber-50/70">
+            <p className="text-sm font-semibold text-amber-900">使用限制</p>
+            <p className="mt-2 text-sm leading-6 text-slate-700">
+              声量指数是相对强度指标，不代表精确阅读人数或官方流量；筛选条件变化后，平均指数和热点议题会同步重算。
+            </p>
+          </div>
+        </div>
       </Panel>
     </div>
   )

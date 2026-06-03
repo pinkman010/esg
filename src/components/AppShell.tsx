@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   BarChart3,
@@ -38,28 +38,28 @@ const pageMeta: Record<
     title: '首页总览',
     description: 'ESG 披露、竞对议题与 Claw 舆情一体化展示',
     visual: '/visuals/overview-dashboard-hero.webp',
-    visualFillPosition: 'object-[58%_50%]',
-    visualFocusPosition: 'object-[58%_50%]',
+    visualFillPosition: '38% 50%',
+    visualFocusPosition: '38% 50%',
     visualFocusFit: 'object-cover',
-    visualFocusScale: 'scale-100',
-    visualFocusShift: 'translate-x-0 translate-y-0',
+    visualFocusScale: 'scale-[1.5]',
+    visualFocusShift: '-translate-x-[20%] translate-y-0',
   },
   '/policy': {
     title: '政策与 ESG 报告披露分析',
     description: '以远景能源 2024 年 ESG 报告为对象，对照 ESRS / GRI 条款识别强制披露缺口和补充建议。',
     visual: '/visuals/module-policy-disclosure.webp',
-    visualFillPosition: 'object-[28%_50%]',
-    visualFocusPosition: 'object-[28%_50%]',
+    visualFillPosition: '28% 50%',
+    visualFocusPosition: '28% 50%',
     visualFocusFit: 'object-cover',
-    visualFocusScale: 'scale-125',
-    visualFocusShift: 'translate-x-10 translate-y-0',
+    visualFocusScale: 'scale-[1.5]',
+    visualFocusShift: 'translate-x-[20%] translate-y-0',
   },
   '/benchmark': {
     title: '实质性议题竞对分析',
     description: '固定范围：远景能源、西门子能源、VESTAS、明阳智能、金风科技。对比议题覆盖、披露深度和证据质量。',
     visual: '/visuals/module-materiality-benchmark.webp',
-    visualFillPosition: 'object-[64%_48%]',
-    visualFocusPosition: 'object-[64%_48%]',
+    visualFillPosition: '64% 48%',
+    visualFocusPosition: '64% 48%',
     visualFocusFit: 'object-cover',
     visualFocusScale: 'scale-125',
     visualFocusShift: 'translate-x-0 translate-y-0',
@@ -68,13 +68,15 @@ const pageMeta: Record<
     title: 'Claw 舆情监测',
     description: '展示 Claw 工具抓取后的舆情结果，用于说明外部声量如何影响实质性议题判断。',
     visual: '/visuals/module-claw-monitor.webp',
-    visualFillPosition: 'object-[34%_56%]',
-    visualFocusPosition: 'object-[34%_56%]',
+    visualFillPosition: '34% 56%',
+    visualFocusPosition: '34% 56%',
     visualFocusFit: 'object-cover',
     visualFocusScale: 'scale-125',
     visualFocusShift: 'translate-x-0 translate-y-0',
   },
 }
+
+const headerVisuals = Array.from(new Set(Object.values(pageMeta).map((meta) => meta.visual)))
 
 function BrandWordmark({ compact = false }: { compact?: boolean }) {
   return (
@@ -137,6 +139,28 @@ export function AppShell({
   const location = useLocation()
   const currentMeta = pageMeta[location.pathname] ?? pageMeta['/']
   const [searchOpen, setSearchOpen] = useState(false)
+
+  useEffect(() => {
+    const images = headerVisuals.map((src) => {
+      const image = new Image()
+      image.decoding = 'async'
+      image.src = src
+      return image
+    })
+
+    void Promise.all(
+      images.map((image) =>
+        image.decode ? image.decode().catch(() => undefined) : Promise.resolve(),
+      ),
+    )
+
+    return () => {
+      images.forEach((image) => {
+        image.onload = null
+        image.onerror = null
+      })
+    }
+  }, [])
 
   useLayoutEffect(() => {
     const previousScrollRestoration = window.history.scrollRestoration
@@ -216,22 +240,22 @@ export function AppShell({
             aria-hidden="true"
             className={clsx(
               'pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.34] brightness-95 saturate-125 contrast-125',
-              currentMeta.visualFillPosition,
             )}
+            style={{ objectPosition: currentMeta.visualFillPosition }}
           />
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.82)_0%,rgba(236,253,245,0.56)_52%,rgba(209,250,229,0.36)_100%)]" />
-          <div className="pointer-events-none absolute inset-y-0 right-8 hidden w-[50vw] min-w-[380px] max-w-[720px] overflow-hidden [mask-image:linear-gradient(90deg,transparent_0%,black_16%,black_84%,transparent_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,black_16%,black_84%,transparent_100%)] md:block lg:right-[214px]">
-            <img
+          <div className="pointer-events-none absolute inset-y-0 right-8 hidden w-[50vw] min-w-[380px] max-w-[720px] overflow-hidden bg-[linear-gradient(90deg,rgba(236,253,245,0.70)_0%,rgba(209,250,229,0.38)_100%)] [mask-image:linear-gradient(90deg,transparent_0%,black_16%,black_84%,transparent_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,black_16%,black_84%,transparent_100%)] md:block lg:right-[360px]">
+          <img
               src={currentMeta.visual}
               alt=""
               aria-hidden="true"
               className={clsx(
-                'absolute inset-0 h-full w-full opacity-[0.88] brightness-95 saturate-135 contrast-125',
+                'pointer-events-none absolute inset-0 h-full w-full opacity-[0.88] brightness-95 saturate-135 contrast-125',
                 currentMeta.visualFocusFit,
-                currentMeta.visualFocusPosition,
                 currentMeta.visualFocusScale,
                 currentMeta.visualFocusShift,
               )}
+              style={{ objectPosition: currentMeta.visualFocusPosition }}
             />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(236,253,245,0.68)_0%,rgba(236,253,245,0.06)_44%,rgba(209,250,229,0.24)_100%)]" />
           </div>
