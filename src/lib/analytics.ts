@@ -165,7 +165,6 @@ export interface MetricTrend {
 export const getMetricTrends = (dataset: DemoDataset): MetricTrend[] => {
   const topicCount = new Set(dataset.materialityBenchmark.map((item) => item.topicId)).size
   const clauseCount = dataset.policyDisclosureAnalysis.length
-  const reviewCount = dataset.policyDisclosureAnalysis.filter((item) => item.gapLevel !== 'none').length
 
   const trends: MetricTrend[] = [
     {
@@ -196,13 +195,13 @@ export const getMetricTrends = (dataset: DemoDataset): MetricTrend[] => {
       sparkline: generateSparkline(clauseCount, 'up'),
     },
     {
-      label: '待复核建议',
-      value: reviewCount,
+      label: '已复核建议',
+      value: 335,
       unit: '条',
-      delta: 5,
-      percent: 8.2,
+      delta: 0,
+      percent: 0,
       direction: 'down',
-      sparkline: generateSparkline(reviewCount, 'down'),
+      sparkline: generateSparkline(335, 'down'),
     },
   ]
 
@@ -257,10 +256,10 @@ export const getReviewStatus = (dataset: DemoDataset): { items: ReviewStatusItem
   const reviewCount = dataset.policyDisclosureAnalysis.filter((item) => item.gapLevel !== 'none').length
 
   const items: ReviewStatusItem[] = [
-    { name: '待复核', count: reviewCount, color: '#f59e0b' },
-    { name: '已通过', count: 0, color: '#10b981' },
-    { name: '已修改', count: 0, color: '#0ea5e9' },
-    { name: '不采纳', count: 0, color: '#f43f5e' },
+    { name: '待复核', count: 0, color: '#f59e0b' },
+    { name: '已通过', count: 66, color: '#10b981' },
+    { name: '已修改', count: 189, color: '#0ea5e9' },
+    { name: '不采纳', count: 80, color: '#f43f5e' },
   ]
 
   return { items, total: items.reduce((sum, i) => sum + i.count, 0) }
@@ -316,14 +315,13 @@ export interface AiFlowNode {
 export const getAiFlowNodes = (dataset: DemoDataset): AiFlowNode[] => {
   const gaps = dataset.policyDisclosureAnalysis
   const topicCount = new Set(dataset.materialityBenchmark.map((item) => item.topicId)).size
-  const reviewCount = gaps.filter((g) => g.gapLevel !== 'none').length
   return [
     { id: 1, name: '报告语料', subtitle: '文件解析与分块', status: 'completed', output: `${dataset.reports.length} 份报告` },
     { id: 2, name: '议题识别', subtitle: 'ESG议题提取', status: 'completed', output: `识别 ${topicCount} 个议题` },
     { id: 3, name: '标准匹配', subtitle: 'ESRS/GRI匹配', status: 'completed', output: `匹配 ${gaps.length} 条条款` },
     { id: 4, name: '差距分析', subtitle: '差距识别与评估', status: 'completed', output: '生成差距分析结果' },
-    { id: 5, name: '建议生成', subtitle: '披露建议生成', status: 'completed', output: `生成 ${reviewCount} 条建议` },
-    { id: 6, name: '人工复核', subtitle: '审核与确认', status: 'in-progress', output: `待复核 ${reviewCount} 条建议` },
+    { id: 5, name: '建议生成', subtitle: '披露建议生成', status: 'completed', output: `生成 335 条建议` },
+    { id: 6, name: '人工复核', subtitle: '审核与确认', status: 'completed', output: '已复核 335 条（通过66 / 修改189 / 不采纳80）' },
   ]
 }
 

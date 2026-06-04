@@ -2,7 +2,7 @@
 
 纯前端结项汇报系统，用于展示远景能源 ESG 披露差距、实质性议题竞对分析和 Claw 舆情监测结果。
 
-当前版本不连接真实后端，所有展示数据来自 `public/data/demo-dataset.json`。架构保留数据读取层，后续接 FastAPI 后端时优先替换 repository，不重构页面。
+当前版本不连接真实后端，前端运行时读取两类本地静态数据：`public/data/demo-dataset.json` 提供基础演示数据，`public/generated/full-standard-disclosure.json` 提供 ESRS / GRI 全量标准库及披露差距分析，并在加载后覆盖基础数据中的标准库和披露分析字段。架构保留数据读取层，后续接 FastAPI 后端时优先替换 repository，不重构页面。
 
 ## 核心模块
 
@@ -38,8 +38,9 @@
 
 ### 4. Claw 舆情监测
 
-- 展示 Claw 工具抓取后的舆情结果看板。
+- 展示 Claw 工具抓取后同步到前端的公司级舆情结果看板。
 - 当前不做真实在线抓取。
+- 当前页面不展示 Claw 批次文件中的行业级信号；这些信号保留在 `data/claw_public_opinion_*.json` 的 `excludedIndustryRecords` 中，用于审计回溯。
 - 展示舆情条数、触达声量、高风险事件、负面声量。
 - 支持按公司、情绪、风险等级筛选。
 - 将舆情事件关联到实质性议题，用于说明外部声量对议题重要性判断的影响。
@@ -104,13 +105,18 @@ http://127.0.0.1:4173/
 
 ## 数据契约
 
-主数据文件：
+前端数据文件：
 
 ```text
 public/data/demo-dataset.json
+public/generated/full-standard-disclosure.json
 ```
 
-前端启动时会读取并校验该文件。当前版本已将 Claw 舆情样本更新为 2026-05-19 批次数据，用于展示近期外部舆情风险、政策不确定性和竞对 ESG 信号。
+前端启动时会先读取并校验 `public/data/demo-dataset.json`，再读取 `public/generated/full-standard-disclosure.json`。全量标准库文件用于覆盖 `standards` 与 `policyDisclosureAnalysis`，是政策披露模块的关键依赖；如果该文件缺失、加载失败或结构不符合契约，当前实现会导致整体数据校验失败，页面无法正常展示。
+
+当前版本已将 Claw 前端公司级舆情样本更新为 2026-06-03 批次数据。Claw 批次文件中的行业级信号未进入当前前端页面展示，仅保留在本地数据文件中用于审计回溯。
+
+当前竞对报告样本仍为 2024 年报告，不代表截至 2026-06-04 的最新公开报告全量覆盖。需要更新到 2025 年或更晚报告时，应重新抽取报告、重建实质性议题竞对分析和相关证据。
 
 核心结构：
 
@@ -149,7 +155,7 @@ src/repositories/demoDataRepository.ts
 
 ## 后端对接方式
 
-当前页面不直接读取后端接口。页面只依赖 `DemoDataset` 标准模型。
+当前页面不直接读取后端接口。页面最终只依赖合并后的 `DemoDataset` 标准模型，但本地静态模式下由 repository 同时读取基础数据和全量标准库数据。
 
 后续对接 `C:\Alvin\SUFE\整合实践\envision` 一类 FastAPI 后端时，推荐新增聚合接口：
 
@@ -157,29 +163,31 @@ src/repositories/demoDataRepository.ts
 GET /api/v1/frontend/demo-dataset
 ```
 
-接口直接返回与 `demo-dataset.json` 一致的数据结构。
+接口直接返回完整 `DemoDataset` 数据结构，包含标准库、披露差距分析、实质性议题、舆情和审计记录。
 
-前端只需要把：
+前端建议把当前两个静态数据读取点：
 
 ```ts
 fetch('/data/demo-dataset.json')
+fetch('/generated/full-standard-disclosure.json')
 ```
 
-替换为：
+替换为单一聚合接口：
 
 ```ts
 fetch('/api/v1/frontend/demo-dataset')
 ```
 
-这样页面组件、筛选逻辑、图表逻辑都不需要重构。
+这样页面组件、筛选逻辑、图表逻辑都不需要重构。若后端仍拆分基础数据和全量标准库，也需要保持二者的加载顺序、字段覆盖关系和失败处理口径一致。
 
 ## 目录结构
 
 ```text
 public/
   brand/                 自制 Logo 与新能源背景素材
-  data/demo-dataset.json 纯前端演示数据
-data/                    本地原始资料与中间数据，不参与前端运行
+  data/demo-dataset.json 基础演示数据
+  generated/             全量标准库与披露差距分析数据
+data/                    本地原始资料与中间数据；Claw 行业级信号保留在批次文件中，不参与当前页面展示
 src/
   components/            通用 UI 与图表组件
   lib/                   统计、格式化、聚合函数

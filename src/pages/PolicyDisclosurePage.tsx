@@ -36,34 +36,11 @@ const fullStandardSummary = {
   outputName: '远景能源_ESRS_GRI全量标准库披露差距分析.xlsx',
   rawRows: { esrs: 7222, gri: 795 },
   requirementRows: { total: 1448, esrs: 945, gri: 503 },
-  reviewCount: 335,
   statusCounts: [
     { label: '已披露', value: 1113, tone: 'text-emerald-700' },
     { label: '部分披露', value: 254, tone: 'text-amber-700' },
     { label: '未披露', value: 1, tone: 'text-rose-700' },
     { label: '待人工确认', value: 80, tone: 'text-slate-700' },
-  ],
-  topGaps: [
-    { standard: 'ESRS', clause: 'E3 IRO-1 8 b', topic: '水与海洋资源影响识别中，是否及如何与受影响社区开展磋商', status: '部分披露', gap: '轻微差距', priority: 84 },
-    { standard: 'ESRS', clause: 'BP-1 5 a', topic: '可持续发展声明是否按合并或单体口径编制', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'BP-1 5 c', topic: '可持续发展声明对上下游价值链的覆盖程度', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'BP-1 5 e', topic: '是否使用特定敏感信息豁免及对应说明', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'BP-2 6', topic: '特殊情形披露', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'GOV-3 29 d', topic: '可变薪酬中与可持续目标挂钩的比例', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'GOV-3 29 e', topic: '激励方案审批和更新层级', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'GOV-5 36 b', topic: '风险评估方法和优先级排序方法', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'IRO-1 53 b ii', topic: '自有运营及价值链影响识别覆盖', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'IRO-1 53 c i', topic: '影响和依赖关系与风险机遇的连接', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'IRO-1 53 c iii', topic: '可持续相关风险与其他风险的优先级关系', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'MDR-P 65 c', topic: '政策落实的最高责任层级', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'MDR-T 80 e', topic: '目标适用期间和阶段性里程碑', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'MDR-T 81', topic: '目标跟踪相关补充披露', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'SBM-2 45 a ii', topic: '利益相关方参与频次和对象类别', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'SBM-2 45 a iv', topic: '利益相关方参与目的', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'SBM-2 45 a v', topic: '利益相关方参与结果如何纳入决策', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'SBM-3 46', topic: '重大影响、风险和机遇相关补充披露', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'SBM-3 48 c iii', topic: '重大影响的预期时间范围', status: '部分披露', gap: '轻微差距', priority: 82 },
-    { standard: 'ESRS', clause: 'E1 E1-1 16 g 1 d-g', topic: '与欧盟巴黎协定基准排除相关说明', status: '部分披露', gap: '轻微差距', priority: 80 },
   ],
 }
 
@@ -103,6 +80,13 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
   const standardProgress = getFullStandardProgress()
   const requirementDistribution = useMemo(
     () => getRequirementDistribution(dataset.policyDisclosureAnalysis),
+    [dataset.policyDisclosureAnalysis],
+  )
+  const topGaps = useMemo(
+    () =>
+      sortByPriority(dataset.policyDisclosureAnalysis)
+        .filter((item) => item.gapLevel !== 'none')
+        .slice(0, 10),
     [dataset.policyDisclosureAnalysis],
   )
 
@@ -152,7 +136,7 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
             <SummaryStat label="ESRS 原始数据点" value={formatNumber(fullStandardSummary.rawRows.esrs)} />
             <SummaryStat label="GRI 原始数据点" value={formatNumber(fullStandardSummary.rawRows.gri)} />
             <SummaryStat label="聚合披露要求" value={formatNumber(fullStandardSummary.requirementRows.total)} />
-            <SummaryStat label="待复核项目" value={formatNumber(fullStandardSummary.reviewCount)} />
+            <SummaryStat label="已复核项目" value="335" />
           </div>
 
           <div className="subpanel-muted p-4">
@@ -174,7 +158,7 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
               <p className="text-sm font-semibold text-slate-950">高优先级缺口 Top 10</p>
               <p className="text-xs text-slate-500">规则初筛结果，需人工复核</p>
             </div>
-            <TopGapTable items={fullStandardSummary.topGaps} />
+            <TopGapTable items={topGaps} />
           </div>
         </div>
       </Panel>
@@ -449,19 +433,7 @@ function DisclosureGapTable({ items, onReset }: { items: DisclosureGap[]; onRese
   )
 }
 
-const topGapStatusMap: Record<string, DisclosureStatus> = {
-  '已披露': 'disclosed',
-  '部分披露': 'partial',
-  '未披露': 'missing',
-}
-
-const topGapLevelMap: Record<string, GapLevel> = {
-  '重大差距': 'major',
-  '轻微差距': 'minor',
-  '无差距': 'none',
-}
-
-function TopGapTable({ items }: { items: typeof fullStandardSummary.topGaps }) {
+function TopGapTable({ items }: { items: DisclosureGap[] }) {
   return (
     <div className="max-h-[440px] overflow-auto pr-2 [scrollbar-gutter:stable]">
       <table className="w-full min-w-[960px] table-fixed text-left text-sm">
@@ -499,7 +471,7 @@ function TopGapTable({ items }: { items: typeof fullStandardSummary.topGaps }) {
             const priorityColor = item.priority >= 82 ? 'text-rose-600' : 'text-amber-600'
             return (
               <tr
-                key={`${item.standard}-${item.clause}`}
+                key={item.id}
                 className="border-b border-slate-100 align-top transition-colors duration-150 hover:bg-slate-50/80 even:bg-slate-50/20"
               >
                 <td className="whitespace-nowrap py-4 pr-4">
@@ -509,14 +481,14 @@ function TopGapTable({ items }: { items: typeof fullStandardSummary.topGaps }) {
                     {rank}
                   </span>
                 </td>
-                <td className="whitespace-nowrap py-4 pr-4 font-semibold text-slate-950">{item.standard}</td>
-                <td className="whitespace-nowrap py-4 pr-4 font-mono text-sm text-slate-600">{item.clause}</td>
-                <td className="py-4 pr-4 leading-6 text-slate-700">{item.topic}</td>
+                <td className="whitespace-nowrap py-4 pr-4 font-semibold text-slate-950">{item.standardType}</td>
+                <td className="whitespace-nowrap py-4 pr-4 font-mono text-sm text-slate-600">{item.clauseId}</td>
+                <td className="py-4 pr-4 leading-6 text-slate-700">{getChineseDisclosureTopic(item)}</td>
                 <td className="whitespace-nowrap py-4 pr-4">
-                  <DisclosureStatusBadge value={topGapStatusMap[item.status] ?? 'partial'} />
+                  <DisclosureStatusBadge value={item.disclosureStatus} />
                 </td>
                 <td className="whitespace-nowrap py-4 pr-4">
-                  <GapBadge value={topGapLevelMap[item.gap] ?? 'minor'} />
+                  <GapBadge value={item.gapLevel} />
                 </td>
                 <td className={`whitespace-nowrap py-4 text-right text-lg font-semibold ${priorityColor}`}>{item.priority}</td>
               </tr>
