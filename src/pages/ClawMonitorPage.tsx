@@ -111,7 +111,7 @@ export function ClawMonitorPage({ dataset }: { dataset: DemoDataset }) {
         />
       </div>
 
-      <div className="grid items-stretch gap-5 xl:grid-cols-[1.2fr,0.8fr]">
+      <div className="grid items-stretch gap-5 xl:grid-cols-2">
         <Panel
           title="风险趋势"
           className="flex h-full flex-col"

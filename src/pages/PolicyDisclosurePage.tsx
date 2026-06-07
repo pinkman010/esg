@@ -93,7 +93,7 @@ export function PolicyDisclosurePage({ dataset }: { dataset: DemoDataset }) {
 
   return (
     <div className="space-y-5">
-      <div className="grid items-stretch gap-5 xl:grid-cols-[0.9fr,1.1fr]">
+      <div className="grid items-stretch gap-5 xl:grid-cols-2">
         <Panel title="标准覆盖概览" className="flex h-full flex-col" contentClassName="flex flex-1 flex-col">
           <div className="grid gap-3">
             {standardProgress.map((item) => (
@@ -364,26 +364,26 @@ function DisclosureGapTable({ items, onReset }: { items: DisclosureGap[]; onRese
   }
 
   return (
-    <div className="max-h-[1011px] overflow-auto pr-2 [scrollbar-gutter:stable]">
+    <div className="max-h-[1011px] overflow-auto px-2 [scrollbar-gutter:stable]">
       <table className="w-full min-w-[1100px] table-fixed text-left text-sm">
         <colgroup>
-          <col className="w-[13%]" />
+          <col className="w-[15%]" />
           <col className="w-[18%]" />
-          <col className="w-[10%]" />
-          <col className="w-[10%]" />
-          <col className="w-[10%]" />
-          <col className="w-[29%]" />
-          <col className="w-[10%]" />
+          <col className="w-[9%]" />
+          <col className="w-[9%]" />
+          <col className="w-[9%]" />
+          <col className="w-[27%]" />
+          <col className="w-[13%]" />
         </colgroup>
-        <thead className="sticky top-0 z-10">
+        <thead className="sticky top-0 z-10 mx-[-8px] px-2">
           <tr className="border-b border-slate-200 bg-slate-100 text-xs uppercase tracking-wider text-slate-500">
-            <th className="py-3 pr-4 font-semibold">条款</th>
-            <th className="py-3 pr-4 font-semibold">议题</th>
-            <th className="py-3 pr-4 font-semibold">属性</th>
-            <th className="py-3 pr-4 font-semibold">状态</th>
-            <th className="py-3 pr-4 font-semibold">差距</th>
-            <th className="py-3 pr-4 font-semibold">证据与建议</th>
-            <th className="py-3 text-right font-semibold">优先级</th>
+            <th className="px-4 py-3 text-center font-semibold">条款</th>
+            <th className="px-4 py-3 text-center font-semibold">议题</th>
+            <th className="px-4 py-3 text-center font-semibold">属性</th>
+            <th className="px-4 py-3 text-center font-semibold">状态</th>
+            <th className="px-4 py-3 text-center font-semibold">差距</th>
+            <th className="px-4 py-3 text-center font-semibold">证据与建议</th>
+            <th className="px-4 py-3 text-center font-semibold">优先级</th>
           </tr>
         </thead>
         <tbody>
@@ -399,27 +399,27 @@ function DisclosureGapTable({ items, onReset }: { items: DisclosureGap[]; onRese
                 key={item.id}
                 className={`group border-b border-slate-100 align-top transition-colors duration-[250ms] ease-out hover:bg-slate-50/80 even:bg-slate-50/20 ${gapLeftBorder[item.gapLevel]} hover:shadow-[2px_0_8px_rgba(16,185,129,0.08)]`}
               >
-                <td className="py-3.5 pr-4 font-semibold text-slate-950">{item.clauseId}</td>
-                <td className="py-3.5 pr-4">
+                <td className="px-4 py-3.5 text-center font-semibold text-slate-950">{item.clauseId}</td>
+                <td className="px-4 py-3.5 text-left">
                   <div className="flex flex-col gap-2">
                     <span className="overflow-hidden font-medium leading-5 text-slate-900 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">{getChineseDisclosureTopic(item)}</span>
                     <DimensionBadge value={item.dimension} />
                   </div>
                 </td>
-                <td className="py-3.5 pr-4">
+                <td className="px-4 py-3.5 text-center">
                   <RequirementBadge value={item.requirementType} />
                 </td>
-                <td className="py-3.5 pr-4">
+                <td className="px-4 py-3.5 text-center">
                   <DisclosureStatusBadge value={item.disclosureStatus} />
                 </td>
-                <td className="py-3.5 pr-4">
+                <td className="px-4 py-3.5 text-center">
                   <GapBadge value={item.gapLevel} />
                 </td>
-                <td className="py-3.5 pr-4">
+                <td className="px-4 py-3.5 text-left">
                   <p className="overflow-hidden leading-5 text-slate-700 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">{getChineseEvidenceSummary(item)}</p>
                   <p className="mt-1 overflow-hidden text-xs leading-5 text-emerald-700 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:1]">建议：{getChineseDisclosureRecommendation(item)}</p>
                 </td>
-                <td className="py-3.5 text-right text-lg font-semibold text-slate-950">{item.priority}</td>
+                <td className="px-4 py-3.5 text-center text-lg font-semibold text-slate-950">{item.priority}</td>
               </tr>
             )
           })}
@@ -431,26 +431,26 @@ function DisclosureGapTable({ items, onReset }: { items: DisclosureGap[]; onRese
 
 function TopGapTable({ items }: { items: DisclosureGap[] }) {
   return (
-    <div className="max-h-[440px] overflow-auto pr-2 [scrollbar-gutter:stable]">
+    <div className="max-h-[440px] overflow-auto px-2 [scrollbar-gutter:stable]">
       <table className="w-full min-w-[960px] table-fixed text-left text-sm">
         <colgroup>
-          <col className="w-[7%]" />
-          <col className="w-[8%]" />
-          <col className="w-[16%]" />
-          <col className="w-[38%]" />
-          <col className="w-[11%]" />
-          <col className="w-[11%]" />
           <col className="w-[9%]" />
+          <col className="w-[9%]" />
+          <col className="w-[18%]" />
+          <col className="w-[33%]" />
+          <col className="w-[10%]" />
+          <col className="w-[10%]" />
+          <col className="w-[11%]" />
         </colgroup>
-        <thead className="shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <thead className="shadow-[0_1px_2px_rgba(0,0,0,0.04)] mx-[-8px] px-2">
           <tr className="border-b border-slate-200 bg-slate-100 text-xs uppercase tracking-wider text-slate-500">
-            <th className="whitespace-nowrap py-3 pr-4 font-semibold">排名</th>
-            <th className="whitespace-nowrap py-3 pr-4 font-semibold">标准</th>
-            <th className="whitespace-nowrap py-3 pr-4 font-semibold">条款</th>
-            <th className="py-3 pr-4 font-semibold">重点缺口</th>
-            <th className="whitespace-nowrap py-3 pr-4 font-semibold">状态</th>
-            <th className="whitespace-nowrap py-3 pr-4 font-semibold">差距</th>
-            <th className="whitespace-nowrap py-3 text-right font-semibold">优先级</th>
+            <th className="whitespace-nowrap px-4 py-3 text-center font-semibold">排名</th>
+            <th className="whitespace-nowrap px-4 py-3 text-center font-semibold">标准</th>
+            <th className="whitespace-nowrap px-4 py-3 text-center font-semibold">条款</th>
+            <th className="px-4 py-3 text-center font-semibold">重点缺口</th>
+            <th className="whitespace-nowrap px-4 py-3 text-center font-semibold">状态</th>
+            <th className="whitespace-nowrap px-4 py-3 text-center font-semibold">差距</th>
+            <th className="whitespace-nowrap px-4 py-3 text-center font-semibold">优先级</th>
           </tr>
         </thead>
         <tbody>
@@ -470,23 +470,23 @@ function TopGapTable({ items }: { items: DisclosureGap[] }) {
                 key={item.id}
                 className="group border-b border-slate-100 align-top transition-colors duration-[250ms] ease-out hover:bg-slate-50/80 even:bg-slate-50/20 hover:shadow-[2px_0_8px_rgba(16,185,129,0.08)]"
               >
-                <td className="whitespace-nowrap py-4 pr-4">
+                <td className="whitespace-nowrap px-4 py-4 text-center">
                   <span
                     className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${rankBadge}`}
                   >
                     {rank}
                   </span>
                 </td>
-                <td className="whitespace-nowrap py-4 pr-4 font-semibold text-slate-950">{item.standardType}</td>
-                <td className="whitespace-nowrap py-4 pr-4 font-mono text-sm text-slate-600">{item.clauseId}</td>
-                <td className="py-4 pr-4 leading-6 text-slate-700">{getChineseDisclosureTopic(item)}</td>
-                <td className="whitespace-nowrap py-4 pr-4">
+                <td className="whitespace-nowrap px-4 py-4 text-center font-semibold text-slate-950">{item.standardType}</td>
+                <td className="whitespace-nowrap px-4 py-4 text-center font-mono text-sm text-slate-600">{item.clauseId}</td>
+                <td className="px-4 py-4 text-center leading-6 text-slate-700">{getChineseDisclosureTopic(item)}</td>
+                <td className="whitespace-nowrap px-4 py-4 text-center">
                   <DisclosureStatusBadge value={item.disclosureStatus} />
                 </td>
-                <td className="whitespace-nowrap py-4 pr-4">
+                <td className="whitespace-nowrap px-4 py-4 text-center">
                   <GapBadge value={item.gapLevel} />
                 </td>
-                <td className={`whitespace-nowrap py-4 text-right text-lg font-semibold ${priorityColor}`}>{item.priority}</td>
+                <td className={`whitespace-nowrap px-4 py-4 text-center text-lg font-semibold ${priorityColor}`}>{item.priority}</td>
               </tr>
             )
           })}
